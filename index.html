@@ -3,18 +3,24 @@
 
 <head>
     <link rel="stylesheet" type="text/css" href="style.css" />
-    <script src='https://cdnjs.cloudflare.com/ajax/libs/tone/14.4.9/Tone.js'></script>
     <script src="script.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.js"></script>                           
+    <link href="https://cdn.jsdelivr.net/npm/round-slider@1.6.1/dist/roundslider.min.css" rel="stylesheet" />                                
+    <script src="https://cdn.jsdelivr.net/npm/round-slider@1.6.1/dist/roundslider.min.js"></script>
 </head>
 
 <body>
-        <p>Volume:</p>
-        <input type="range" min="0" max="100" value="50"id="volumeSlider">
+    <div class="Volume">
+        <p class="vol-text">Volume:</p>
+        <div class="slider" id="volume-slider"></div>
+    </div>  
     <div id='container'>
     </div>
     <script>
         buildKeys()
     </script>
+
+    
 </body>
 
 </html>

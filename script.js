@@ -25,6 +25,20 @@ function buildKeys() {
         }
     }
     document.getElementById('container').innerHTML = html;
+    $(".slider").roundSlider({
+        radius: 80,
+        circleShape: "pie",
+        sliderType: "min-range",
+        // showTooltip: false,
+        value: 50,
+        startAngle: 315,
+        min: 0,
+        max:100,
+        handleSize: "22,12",
+        handleShape: "square",
+        animation:false
+    });
+    
 }
 
 function getFrequency(midiValue){
@@ -62,10 +76,25 @@ function noteDown(elem, isSharp) {
     var note = elem.dataset.note;
     elem.style.background = isSharp ? 'black' : '#ccc';
     playSound(getFrequency(noteToMIDI(note)));
+    stopSound()
+}
 
+
+function stopSound() {
+    // Stop the sound by closing the audio context
+    if (audioContext) {
+        audioContext.close().then(function () {
+            console.log('Audio context closed on key release.');
+        });
+    }
 }
 function getdB(){
-    var dbvolume = 37*(document.getElementById('volumeSlider').value/100)-40;
+    // Get the roundSlider instance
+    var roundSlider = $("#volume-slider").data("roundSlider");
+
+    // Access the current value
+    var sliderValue = roundSlider.getValue();
+    var dbvolume = 37*(sliderValue/100)-40;
     return dbvolume;
 }
 

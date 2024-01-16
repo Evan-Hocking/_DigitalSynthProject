@@ -22,3 +22,22 @@
     background: #777;
     left: 68%;
 }
+
+.rs-overlay.rs-transition.rs-bg-color {
+    background-color: transparent;
+  }
+
+.slider .rs-border  {
+    border-width: 2px;
+}
+.slider .rs-handle  {
+    background: black;
+    margin-left: 0 !important;
+}
+.vol-text{
+
+    text-align: center;
+}
+.Volume{
+    max-width: 100px;
+}
