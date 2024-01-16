@@ -1,4 +1,6 @@
-
+const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+let gainNode = null; // Variable to store the gain node
+let activeSource = null; // Variable to store the currently active source
 function buildKeys() {
     var notes = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
     var html = "";
@@ -65,29 +67,51 @@ function noteToMIDI(noteName) {
     }
 }
 
+function updateGain(value) {
 
+    if (gainNode) {
+        gainNode.gain.setValueAtTime(value, audioContext.currentTime);
+    }
+}
 
 function noteUp(elem, isSharp) {
     elem.style.background = isSharp ? '#777' : 'white';
+    stopSound();
 }
 
 function noteDown(elem, isSharp) {
     event.stopPropagation();
     var note = elem.dataset.note;
     elem.style.background = isSharp ? 'black' : '#ccc';
+
+    // Stop any existing sound before starting a new one
+    stopSound();
+
+    // Create a gain node if it doesn't exist
+    if (!gainNode) {
+        gainNode = audioContext.createGain();
+        gainNode.connect(audioContext.destination);
+    }
+
+    // Update the gain value (you can pass any desired value)
+    const amplitude =DbToAmpl(getdB())
+
+    updateGain(amplitude); // Adjust the value based on your needs
+
+    // Play the sound with the current gain
     playSound(getFrequency(noteToMIDI(note)));
-    stopSound()
 }
 
 
 function stopSound() {
-    // Stop the sound by closing the audio context
-    if (audioContext) {
-        audioContext.close().then(function () {
-            console.log('Audio context closed on key release.');
-        });
+    // Stop the active source if there is one
+    if (activeSource) {
+        activeSource.stop();
+        activeSource.disconnect();
+        activeSource = null;
     }
 }
+
 function getdB(){
     // Get the roundSlider instance
     var roundSlider = $("#volume-slider").data("roundSlider");
@@ -95,6 +119,7 @@ function getdB(){
     // Access the current value
     var sliderValue = roundSlider.getValue();
     var dbvolume = 37*(sliderValue/100)-40;
+
     return dbvolume;
 }
 
@@ -104,40 +129,19 @@ function DbToAmpl(dB){
 }
 
 function playSound(frequency) {
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    // Create an oscillator node
+    const oscillator = audioContext.createOscillator();
 
-    // Define the parameters for the sound wave
-    const duration = 1; // Duration in seconds
-    const amplitude =DbToAmpl(getdB())
+    // Set the frequency
+    oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+
+    // Connect the oscillator to the gain node
+    oscillator.connect(gainNode);
+
+    // Start and stop the oscillator after a short duration (adjust as needed)
+    oscillator.start();
 
 
-
-    // Calculate the number of samples
-    const sampleRate = audioContext.sampleRate;
-    const numSamples = Math.floor(sampleRate * duration);
-
-    // Create an array to store the audio data
-    const audioBuffer = audioContext.createBuffer(1, numSamples, sampleRate);
-    const audioData = audioBuffer.getChannelData(0);
-
-    // Generate the sine wave samples
-    for (let i = 0; i < numSamples; i++) {
-        const t = i / sampleRate; // Time in seconds
-        audioData[i] = amplitude * Math.sin(2 * Math.PI * frequency * t);
-    }
-
-    // Create an audio buffer source node
-    const source = audioContext.createBufferSource();
-    source.buffer = audioBuffer;
-
-    // Create a gain node to control the volume
-    const gainNode = audioContext.createGain();
-    gainNode.gain.setValueAtTime(amplitude, audioContext.currentTime);
-
-    // Connect the source to the gain node and the gain node to the audio context's destination
-    source.connect(gainNode);
-    gainNode.connect(audioContext.destination);
-
-    // Start playing the sound
-    source.start();
+    // Store the active source
+    activeSource = oscillator;
 }
