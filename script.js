@@ -8,30 +8,12 @@ const activeKeys = []
 
 //maps keyboard keys to equivalent notes
 const keyNoteMapping = {
-    'tab': 'C4',
-    '1': 'C#4',
-    'q': 'D4',
-    '2': 'D#4',
-    'w': 'E4',
-    'e': 'F4',
-    '4': 'F#4',
-    'r': 'G4',
-    '5': 'G#4',
-    't': 'A4',
-    '6': 'A#4',
-    'y': 'B4',
-    'u': 'C5',
-    '8': 'C#5',
-    'i': 'D5',
-    '9': 'D#5',
-    'o': 'E5',
-    'p': 'F5',
-    '-': 'F#5',
-    '[': 'G5',
-    '=': 'G#5',
-    ']': 'A5',
-    'backspace': 'A#5',
-    '#': 'B5',
+    'tab': 'C4', '1': 'C#4', 'q': 'D4', '2': 'D#4',
+    'w': 'E4', 'e': 'F4', '4': 'F#4', 'r': 'G4',
+    '5': 'G#4', 't': 'A4', '6': 'A#4', 'y': 'B4',
+    'u': 'C5', '8': 'C#5', 'i': 'D5', '9': 'D#5', 
+    'o': 'E5', 'p': 'F5', '-': 'F#5', '[': 'G5',
+    '=': 'G#5', ']': 'A5', 'backspace': 'A#5', '#': 'B5',
 
     // Add more keys as needed
 };
@@ -79,52 +61,6 @@ document.addEventListener('keyup', function (event) {
     }
 });
 
-
-// function buildKeys() {
-//     var notes = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
-//     var html = "";
-//     for (var octave = 0; octave < 2; octave++) {
-//         for (var i = 0; i < notes.length; i++) {
-//             var hasSharp = true;
-//             var note = notes[i];
-//             if (note == 'E' || note == 'B') {
-//                 hasSharp = false;
-//             }
-//             html += `<div class='whitenote'
-//             onmousedown='noteDown(this.dataset.note,false)'
-//             onmouseup='noteUp(this.dataset.note,false)'
-//             onmouseleave='noteUp(this.dataset.note,false)'
-//             data-note='${note + (octave + 4)}' id = '${note + '#' + (octave + 4)}'>`;
-//             if (hasSharp) {
-//                 html += `<div class='blacknote'
-//             onmousedown='noteDown(this.dataset.note,true)'
-//             onmouseup='noteUp(this.dataset.note,true)'
-//             onmouseleave='noteUp(this.dataset.note,true)'
-//             data-note='${note + '#' + (octave + 4)}' id = '${note + '#' + (octave + 4)}'></div>`;
-//             }
-//             html += '</div>';
-//         }
-//     }
-//     document.getElementById('container').innerHTML = html;
-    
-//     $(".slider").roundSlider({
-//         radius: 80,
-//         circleShape: "pie",
-//         sliderType: "min-range",
-//         // showTooltip: false,
-//         value: 50,
-//         startAngle: 315,
-//         min: 0,
-//         max:100,
-//         handleSize: "22,12",
-//         handleShape: "square",
-//         animation:false
-//     });
-    
-// }
-
-
-}
 //applies formula to convert midi to the equivalent frequency value
 function getFrequency(midiValue) {
     return Math.pow(2, (midiValue - 69) / 12) * 440;
@@ -133,23 +69,9 @@ function getFrequency(midiValue) {
 //converts note name to its equivalent midi value
 function noteToMIDI(noteName) {
     const noteMap = {
-        'C': 0,
-        'C#': 1,
-        'Db': 1,
-        'D': 2,
-        'D#': 3,
-        'Eb': 3,
-        'E': 4,
-        'F': 5,
-        'F#': 6,
-        'Gb': 6,
-        'G': 7,
-        'G#': 8,
-        'Ab': 8,
-        'A': 9,
-        'A#': 10,
-        'Bb': 10,
-        'B': 11
+        'C': 0, 'C#': 1, 'Db': 1, 'D': 2, 'D#': 3, 'Eb': 3, 'E': 4,
+        'F': 5, 'F#': 6, 'Gb': 6, 'G': 7, 'G#': 8, 'Ab': 8, 'A': 9,
+        'A#': 10, 'Bb': 10, 'B': 11
     };
 
     const match = noteName.match(/^([A-Ga-g#]+)([0-9]+)$/);
