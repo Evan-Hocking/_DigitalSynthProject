@@ -6,6 +6,7 @@ let activeFrequency = null;
 
 const activeKeys = []
 
+//maps keyboard keys to equivalent notes
 const keyNoteMapping = {
     'tab': 'C4',
     '1': 'C#4',
@@ -34,14 +35,15 @@ const keyNoteMapping = {
 
     // Add more keys as needed
 };
-
+//Event listener for the keydown event
 document.addEventListener('keydown', function (event) {
+    //prevents default tab behaviour since it is used for keyboard input
     if (event.key === 'Tab') {
         event.preventDefault();
     }
     const keyPressed = event.key.toLowerCase();
 
-
+    //tests if key is already playing
     if (!activeKeys.includes(keyPressed)) {
         activeKeys.push(keyPressed);
 
@@ -51,12 +53,13 @@ document.addEventListener('keydown', function (event) {
             const note = keyNoteMapping[keyPressed];
 
 
-            // Play the corresponding music note or perform any other action
-            // depending on your application
+            //calling notedown to start sequence
             noteDown(note, "1234567890-=backspace`".includes(keyPressed) && keyPressed != "p" && keyPressed != "e");
         }
     }
 });
+
+//Event listenter for when a key is released
 document.addEventListener('keyup', function (event) {
     const keyReleased = event.key.toLowerCase();
     const index = activeKeys.indexOf(keyReleased);
@@ -65,31 +68,37 @@ document.addEventListener('keyup', function (event) {
     if (index !== -1) {
         activeKeys.splice(index, 1);
     }
-
+    //tests if key is viable
     if (keyNoteMapping.hasOwnProperty(keyReleased)) {
         const note = keyNoteMapping[keyReleased];
         noteUp(note, "1234567890-=backspace`".includes(keyReleased) && keyReleased != "p" && keyReleased != "e");
     }
+    //restarts original note if simultaneous notes played
     if (activeKeys) {
-        noteDown(keyNoteMapping[activeKeys[0]])
+        noteDown(keyNoteMapping[activeKeys[0]],)
     }
 });
 
+//Builds the onscreen keyboard dynamically 
 function buildKeys() {
     var notes = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
     var html = "";
     for (var octave = 0; octave < 2; octave++) {
+        //generates whole object
         for (var i = 0; i < notes.length; i++) {
             var hasSharp = true;
             var note = notes[i];
+            //tests if note has accomanying sharp
             if (note == 'E' || note == 'B') {
                 hasSharp = false;
             }
+            //generates white note
             html += `<div class='whitenote'
             onmousedown='noteDown(this.dataset.note,false)'
             onmouseup='noteUp(this.dataset.note,false)'
             onmouseleave='noteUp(this.dataset.note,false)'
             data-note='${note + (octave + 4)}' id = '${note + '#' + (octave + 4)}'>`;
+            //generates black note
             if (hasSharp) {
                 html += `<div class='blacknote'
             onmousedown='noteDown(this.dataset.note,true)'
@@ -100,8 +109,9 @@ function buildKeys() {
             html += '</div>';
         }
     }
-    document.getElementById('container').innerHTML = html;
 
+    document.getElementById('container').innerHTML = html;
+    //generates volume slider
     $(".slider").roundSlider({
         radius: 80,
         circleShape: "pie",
@@ -117,10 +127,12 @@ function buildKeys() {
     });
 
 }
-
+//applies formula to convert midi to the equivalent frequency value
 function getFrequency(midiValue) {
     return Math.pow(2, (midiValue - 69) / 12) * 440;
 }
+
+//converts note name to its equivalent midi value
 function noteToMIDI(noteName) {
     const noteMap = {
         'C': 0,
@@ -158,6 +170,7 @@ function noteToMIDI(noteName) {
     }
 }
 
+//updates the gain
 function updateGain(value) {
 
     if (gainNode) {
@@ -165,12 +178,14 @@ function updateGain(value) {
     }
 }
 
+//resets note colours to original and stops calls to stop sound
 function noteUp(note, isSharp) {
     elem = document.querySelector(`[data-note="${note}"]`);
     elem.style.background = isSharp ? '#777' : 'white';
     stopSound(getFrequency(noteToMIDI(note)));
 }
 
+//controls behaviour for when a note is pressed
 function noteDown(note, isSharp) {
 
     elem = document.querySelector(`[data-note="${note}"]`);
@@ -191,14 +206,14 @@ function noteDown(note, isSharp) {
         // Update the gain value (you can pass any desired value)
         const amplitude = DbToAmpl(getdB())
 
-        updateGain(amplitude); // Adjust the value based on your needs
+        updateGain(amplitude); 
 
         // Play the sound with the current gain
         playSound(frequency);
     }
 }
 
-
+//stops sound playing
 function stopSound(frequency = -1) {
     if (frequency == activeFrequency || frequency == -1) {
         // Retrieve the oscillator associated with the frequency
@@ -215,7 +230,7 @@ function stopSound(frequency = -1) {
         }
     }
 }
-
+//converts the slider value 0-100 to decibel values
 function getdB() {
     // Get the roundSlider instance
     var roundSlider = $("#volume-slider").data("roundSlider");
@@ -226,12 +241,13 @@ function getdB() {
 
     return dbvolume;
 }
-
+//converts decibels to amplitude
 function DbToAmpl(dB) {
     var amplitude = 20 * 10 ** (dB / 20);
     return amplitude
 }
 
+//plays sound to selected frequency
 function playSound(frequency) {
     // Create an oscillator node
     const oscillator = audioContext.createOscillator();
