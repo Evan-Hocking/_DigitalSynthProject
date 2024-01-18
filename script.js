@@ -74,48 +74,48 @@ document.addEventListener('keyup', function(event) {
     }
 });
 
-function buildKeys() {
-    var notes = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
-    var html = "";
-    for (var octave = 0; octave < 2; octave++) {
-        for (var i = 0; i < notes.length; i++) {
-            var hasSharp = true;
-            var note = notes[i];
-            if (note == 'E' || note == 'B') {
-                hasSharp = false;
-            }
-            html += `<div class='whitenote'
-            onmousedown='noteDown(this.dataset.note,false)'
-            onmouseup='noteUp(this.dataset.note,false)'
-            onmouseleave='noteUp(this.dataset.note,false)'
-            data-note='${note + (octave + 4)}' id = '${note + '#' + (octave + 4)}'>`;
-            if (hasSharp) {
-                html += `<div class='blacknote'
-            onmousedown='noteDown(this.dataset.note,true)'
-            onmouseup='noteUp(this.dataset.note,true)'
-            onmouseleave='noteUp(this.dataset.note,true)'
-            data-note='${note + '#' + (octave + 4)}' id = '${note + '#' + (octave + 4)}'></div>`;
-            }
-            html += '</div>';
-        }
-    }
-    document.getElementById('container').innerHTML = html;
+// function buildKeys() {
+//     var notes = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
+//     var html = "";
+//     for (var octave = 0; octave < 2; octave++) {
+//         for (var i = 0; i < notes.length; i++) {
+//             var hasSharp = true;
+//             var note = notes[i];
+//             if (note == 'E' || note == 'B') {
+//                 hasSharp = false;
+//             }
+//             html += `<div class='whitenote'
+//             onmousedown='noteDown(this.dataset.note,false)'
+//             onmouseup='noteUp(this.dataset.note,false)'
+//             onmouseleave='noteUp(this.dataset.note,false)'
+//             data-note='${note + (octave + 4)}' id = '${note + '#' + (octave + 4)}'>`;
+//             if (hasSharp) {
+//                 html += `<div class='blacknote'
+//             onmousedown='noteDown(this.dataset.note,true)'
+//             onmouseup='noteUp(this.dataset.note,true)'
+//             onmouseleave='noteUp(this.dataset.note,true)'
+//             data-note='${note + '#' + (octave + 4)}' id = '${note + '#' + (octave + 4)}'></div>`;
+//             }
+//             html += '</div>';
+//         }
+//     }
+//     document.getElementById('container').innerHTML = html;
     
-    $(".slider").roundSlider({
-        radius: 80,
-        circleShape: "pie",
-        sliderType: "min-range",
-        // showTooltip: false,
-        value: 50,
-        startAngle: 315,
-        min: 0,
-        max:100,
-        handleSize: "22,12",
-        handleShape: "square",
-        animation:false
-    });
+//     $(".slider").roundSlider({
+//         radius: 80,
+//         circleShape: "pie",
+//         sliderType: "min-range",
+//         // showTooltip: false,
+//         value: 50,
+//         startAngle: 315,
+//         min: 0,
+//         max:100,
+//         handleSize: "22,12",
+//         handleShape: "square",
+//         animation:false
+//     });
     
-}
+// }
 
 function getFrequency(midiValue){
     return Math.pow(2, (midiValue - 69) / 12) * 440;
