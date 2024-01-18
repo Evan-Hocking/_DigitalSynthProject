@@ -10,9 +10,16 @@
 </head>
 
 <body>
-    
+    <label for="waveform">Select a Waveform: </label>
+
+    <select name="waveform" id="waveform">
+        <option value="sine">Sine</option>
+        <option value="square">Square</option>
+        <option value="sawtooth">Sawtooth</option>
+        <option value="triangle">Triangle</option>
+    </select>
     <div class="Volume">
-        <p class="vol-text">Volume:</p>
+        <p class="vol-text">Gain:</p>
         <div class="slider" id="volume-slider"></div>
     </div>  
     <div id='container'>

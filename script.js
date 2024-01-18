@@ -4,7 +4,7 @@ let gainNode = null; // Variable to store the gain node
 let activeSource = null; // Variable to store the currently active source
 let activeFrequency = null;
 
-const activeKeys=[]
+const activeKeys = []
 
 const keyNoteMapping = {
     'tab': 'C4',
@@ -19,44 +19,45 @@ const keyNoteMapping = {
     't': 'A4',
     '6': 'A#4',
     'y': 'B4',
-    'u':'C5',
-    '8':'C#5',
-    'i':'D5',
-    '9':'D#5',
-    'o':'E5',
-    'p':'F5',
-    '-':'F#5',
-    '[':'G5',
-    '=':'G#5',
-    ']':'A5',
-    'backspace':'A#5',
-    '#':'B5',
-    
-    // Add more keys as needed
-  };
+    'u': 'C5',
+    '8': 'C#5',
+    'i': 'D5',
+    '9': 'D#5',
+    'o': 'E5',
+    'p': 'F5',
+    '-': 'F#5',
+    '[': 'G5',
+    '=': 'G#5',
+    ']': 'A5',
+    'backspace': 'A#5',
+    '#': 'B5',
 
-document.addEventListener('keydown', function(event) {
+    // Add more keys as needed
+};
+
+document.addEventListener('keydown', function (event) {
     if (event.key === 'Tab') {
         event.preventDefault();
-        }
+    }
     const keyPressed = event.key.toLowerCase();
-    
-    
-    if (!activeKeys.includes(keyPressed)){
-        activeKeys.push(keyPressed);
-        
 
-// Check if the pressed key is in the mapping
+
+    if (!activeKeys.includes(keyPressed)) {
+        activeKeys.push(keyPressed);
+
+
+        // Check if the pressed key is in the mapping
         if (keyNoteMapping.hasOwnProperty(keyPressed)) {
             const note = keyNoteMapping[keyPressed];
-    
-    
-    // Play the corresponding music note or perform any other action
-    // depending on your application
-            noteDown(note, "1234567890-=backspace`".includes(keyPressed)&&keyPressed!="p"&&keyPressed!="e");
-}
-}});
-document.addEventListener('keyup', function(event) {
+
+
+            // Play the corresponding music note or perform any other action
+            // depending on your application
+            noteDown(note, "1234567890-=backspace`".includes(keyPressed) && keyPressed != "p" && keyPressed != "e");
+        }
+    }
+});
+document.addEventListener('keyup', function (event) {
     const keyReleased = event.key.toLowerCase();
     const index = activeKeys.indexOf(keyReleased);
 
@@ -67,9 +68,9 @@ document.addEventListener('keyup', function(event) {
 
     if (keyNoteMapping.hasOwnProperty(keyReleased)) {
         const note = keyNoteMapping[keyReleased];
-        noteUp(note, "1234567890-=backspace`".includes(keyReleased)&&keyReleased!="p"&&keyReleased!="e");
+        noteUp(note, "1234567890-=backspace`".includes(keyReleased) && keyReleased != "p" && keyReleased != "e");
     }
-    if (activeKeys){
+    if (activeKeys) {
         noteDown(keyNoteMapping[activeKeys[0]])
     }
 });
@@ -100,7 +101,7 @@ function buildKeys() {
         }
     }
     document.getElementById('container').innerHTML = html;
-    
+
     $(".slider").roundSlider({
         radius: 80,
         circleShape: "pie",
@@ -109,15 +110,15 @@ function buildKeys() {
         value: 50,
         startAngle: 315,
         min: 0,
-        max:100,
+        max: 100,
         handleSize: "22,12",
         handleShape: "square",
-        animation:false
+        animation: false
     });
-    
+
 }
 
-function getFrequency(midiValue){
+function getFrequency(midiValue) {
     return Math.pow(2, (midiValue - 69) / 12) * 440;
 }
 function noteToMIDI(noteName) {
@@ -171,63 +172,63 @@ function noteUp(note, isSharp) {
 }
 
 function noteDown(note, isSharp) {
-    
+
     elem = document.querySelector(`[data-note="${note}"]`);
-    
-    event.stopPropagation();
-    var note = elem.dataset.note;
-    elem.style.background = isSharp ? 'black' : '#ccc';
-    frequency = getFrequency(noteToMIDI(note))
-    // Stop any existing sound before starting a new one
-    
-    stopSound();
-    
-    // Create a gain node if it doesn't exist
-    if (!gainNode) {
-        gainNode = audioContext.createGain();
-        gainNode.connect(audioContext.destination);
+    if (elem) {
+        event.stopPropagation();
+        elem.style.background = isSharp ? 'black' : '#ccc';
+        frequency = getFrequency(noteToMIDI(note))
+        // Stop any existing sound before starting a new one
+
+        stopSound();
+
+        // Create a gain node if it doesn't exist
+        if (!gainNode) {
+            gainNode = audioContext.createGain();
+            gainNode.connect(audioContext.destination);
+        }
+
+        // Update the gain value (you can pass any desired value)
+        const amplitude = DbToAmpl(getdB())
+
+        updateGain(amplitude); // Adjust the value based on your needs
+
+        // Play the sound with the current gain
+        playSound(frequency);
     }
-
-    // Update the gain value (you can pass any desired value)
-    const amplitude =DbToAmpl(getdB())
-
-    updateGain(amplitude); // Adjust the value based on your needs
-    
-    // Play the sound with the current gain
-    playSound(frequency);
 }
 
 
 function stopSound(frequency = -1) {
-    if (frequency == activeFrequency ||frequency == -1){
-    // Retrieve the oscillator associated with the frequency
-    const oscillator = activeSource
+    if (frequency == activeFrequency || frequency == -1) {
+        // Retrieve the oscillator associated with the frequency
+        const oscillator = activeSource
 
-    // Check if the oscillator exists and is still playing
-    if (oscillator && oscillator.state !== 'closed') {
-        // Stop and disconnect the oscillator
-        oscillator.stop();
-        oscillator.disconnect();
+        // Check if the oscillator exists and is still playing
+        if (oscillator && oscillator.state !== 'closed') {
+            // Stop and disconnect the oscillator
+            oscillator.stop();
+            oscillator.disconnect();
 
-        // Remove the oscillator from the map
-        activeSource=null;
+            // Remove the oscillator from the map
+            activeSource = null;
+        }
     }
 }
-}
 
-function getdB(){
+function getdB() {
     // Get the roundSlider instance
     var roundSlider = $("#volume-slider").data("roundSlider");
 
     // Access the current value
     var sliderValue = roundSlider.getValue();
-    var dbvolume = 37*(sliderValue/100)-40;
+    var dbvolume = 37 * (sliderValue / 100) - 40;
 
     return dbvolume;
 }
 
-function DbToAmpl(dB){
-    var amplitude =20* 10**(dB/20);
+function DbToAmpl(dB) {
+    var amplitude = 20 * 10 ** (dB / 20);
     return amplitude
 }
 
@@ -240,7 +241,8 @@ function playSound(frequency) {
 
     // Connect the oscillator to the gain node
     oscillator.connect(gainNode);
-
+    console.log(document.getElementById("waveform").value)
+    oscillator.type = document.getElementById("waveform").value
     // Start and stop the oscillator after a short duration (adjust as needed)
     oscillator.start();
 
