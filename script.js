@@ -102,12 +102,12 @@ function updateGain(value) {
 function noteUp(note, isSharp) {
     elem = document.querySelector(`[data-note="${note}"]`);
     elem.style.background = isSharp ? '#777' : 'white';
-    const releaseTime = getRelease(); // in seconds
-    releaseEnvelope(releaseTime)
-    sleep(releaseTime).then(() => {
-        stopSound(getFrequency(noteToMIDI(note)));
-    });
-
+    // const releaseTime = getRelease(); // in seconds
+    // releaseEnvelope(releaseTime)
+    // sleep(releaseTime).then(() => {
+    //     stopSound(getFrequency(noteToMIDI(note)));
+    // });
+    stopSound(getFrequency(noteToMIDI(note)));
 }
 
 //controls behaviour for when a note is pressed
@@ -119,9 +119,9 @@ function noteDown(note, isSharp) {
         elem.style.background = isSharp ? 'black' : '#ccc';
         frequency = getFrequency(noteToMIDI(note))
         // Stop any existing sound before starting a new one
-
-        stopSound();
-
+        if (activeSource) {
+            stopSound();
+        }
         // Create a gain node if it doesn't exist
         if (!gainNode) {
             gainNode = audioContext.createGain();
@@ -143,18 +143,24 @@ function sleep(seconds) {
 //stops sound playing
 function stopSound(frequency = -1) {
     if (frequency == activeFrequency || frequency == -1) {
-        // Retrieve the oscillator associated with the frequency
-        const oscillator = activeSource
+        const releaseTime = getRelease(); // in seconds
+        releaseEnvelope(releaseTime, frequency)
+        sleep(releaseTime).then(() => {
+            // Retrieve the oscillator associated with the frequency
+            const oscillator = activeSource
 
-        // Check if the oscillator exists and is still playing
-        if (oscillator && oscillator.state !== 'closed') {
-            // Stop and disconnect the oscillator
-            oscillator.stop();
-            oscillator.disconnect();
+            // Check if the oscillator exists and is still playing
+            if (oscillator && oscillator.state !== 'closed') {
+                // Stop and disconnect the oscillator
+                oscillator.stop();
+                oscillator.disconnect();
 
-            // Remove the oscillator from the map
-            activeSource = null;
-        }
+                // Remove the oscillator from the map
+                activeSource = null;
+            }
+        });
+
+
     }
 }
 
@@ -186,7 +192,7 @@ function releaseEnvelope(releaseTime) {
 
     const currentTime = audioContext.currentTime;
     gainNode.gain.cancelScheduledValues(currentTime);
-    gainNode.gain.linearRampToValueAtTime(gainNode.gain.value,currentTime)
+    gainNode.gain.linearRampToValueAtTime(gainNode.gain.value, currentTime)
     // Release
     gainNode.gain.linearRampToValueAtTime(0, currentTime + releaseTime);
 
@@ -218,7 +224,6 @@ function playSound(frequency) {
 
     // Connect the oscillator to the gain node
     oscillator.connect(gainNode);
-    console.log(document.getElementById("waveform").value)
     oscillator.type = document.getElementById("waveform").value
     // Start and stop the oscillator after a short duration (adjust as needed)
     oscillator.start();
