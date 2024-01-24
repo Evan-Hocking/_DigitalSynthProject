@@ -11,7 +11,7 @@ const keyNoteMapping = {
     'tab': 'C4', '1': 'C#4', 'q': 'D4', '2': 'D#4',
     'w': 'E4', 'e': 'F4', '4': 'F#4', 'r': 'G4',
     '5': 'G#4', 't': 'A4', '6': 'A#4', 'y': 'B4',
-    'u': 'C5', '8': 'C#5', 'i': 'D5', '9': 'D#5', 
+    'u': 'C5', '8': 'C#5', 'i': 'D5', '9': 'D#5',
     'o': 'E5', 'p': 'F5', '-': 'F#5', '[': 'G5',
     '=': 'G#5', ']': 'A5', 'backspace': 'A#5', '#': 'B5',
 
@@ -102,7 +102,12 @@ function updateGain(value) {
 function noteUp(note, isSharp) {
     elem = document.querySelector(`[data-note="${note}"]`);
     elem.style.background = isSharp ? '#777' : 'white';
-    stopSound(getFrequency(noteToMIDI(note)));
+    const releaseTime = getRelease(); // in seconds
+    releaseEnvelope(releaseTime)
+    sleep(releaseTime).then(() => {
+        stopSound(getFrequency(noteToMIDI(note)));
+    });
+
 }
 
 //controls behaviour for when a note is pressed
@@ -126,13 +131,15 @@ function noteDown(note, isSharp) {
         // Update the gain value (you can pass any desired value)
         const amplitude = DbToAmpl(getdB())
 
-        updateGain(amplitude); 
-
+        updateGain(amplitude);
+        updateADS()
         // Play the sound with the current gain
         playSound(frequency);
     }
 }
-
+function sleep(seconds) {
+    return new Promise(resolve => setTimeout(resolve, seconds * 1000));
+}
 //stops sound playing
 function stopSound(frequency = -1) {
     if (frequency == activeFrequency || frequency == -1) {
@@ -149,6 +156,40 @@ function stopSound(frequency = -1) {
             activeSource = null;
         }
     }
+}
+
+function getADS() {
+    attack = document.getElementById("attack").value / 10
+    decay = document.getElementById("decay").value / 10
+    sustain = document.getElementById("sustain").value / 10
+
+    return attack, decay, sustain
+}
+function getRelease() {
+    return document.getElementById("release").value / 10
+}
+function updateADS() {
+    attack, decay, sustain, release = getADS()
+    const currentTime = audioContext.currentTime;
+    console.log(currentTime)
+    gainNode.gain.linearRampToValueAtTime(0, currentTime);
+    gainNode.gain.linearRampToValueAtTime(1, currentTime + attack);
+
+    // Decay
+    gainNode.gain.linearRampToValueAtTime(sustain, currentTime + attack + decay);
+
+    // Sustain (no change)
+
+
+}
+function releaseEnvelope(releaseTime) {
+
+    const currentTime = audioContext.currentTime;
+    gainNode.gain.cancelScheduledValues(currentTime);
+    gainNode.gain.linearRampToValueAtTime(gainNode.gain.value,currentTime)
+    // Release
+    gainNode.gain.linearRampToValueAtTime(0, currentTime + releaseTime);
+
 }
 //converts the slider value 0-100 to decibel values
 function getdB() {
