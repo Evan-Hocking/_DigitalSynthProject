@@ -104,11 +104,13 @@ function noteUp(note, isSharp) {
     elem.style.background = isSharp ? '#777' : 'white';
     const releaseTime = getRelease(); // in seconds
     if (activeKeys[0]) {
-        noteDown(keyNoteMapping[activeKeys[activeKeys.length-1]],)
+        noteDown(keyNoteMapping[activeKeys[activeKeys.length - 1]],)
     } else {
         releaseEnvelope(releaseTime)
         sleep(releaseTime).then(() => {
-            stopSound(getFrequency(noteToMIDI(note)));
+            if (!activeKeys[0]) {
+                stopSound(getFrequency(noteToMIDI(note)));
+            }
         });
     }
 
@@ -145,21 +147,16 @@ function sleep(seconds) {
 function stopSound(frequency = -1) {
     if (frequency == activeFrequency || frequency == -1) {
 
-        // Retrieve the oscillator associated with the frequency
-        const oscillator = activeSource
 
         // Check if the oscillator exists and is still playing
-        if (oscillator && oscillator.state !== 'closed') {
+        if (activeSource && activeSource.state !== 'closed') {
             // Stop and disconnect the oscillator
-            oscillator.stop();
-            oscillator.disconnect();
+            activeSource.stop();
+            activeSource.disconnect();
 
             // Remove the oscillator from the map
             activeSource = null;
         }
-
-
-
     }
 }
 
@@ -176,6 +173,7 @@ function getRelease() {
 function updateADS() {
     attack, decay, sustain, release = getADS()
     const currentTime = audioContext.currentTime;
+    gainNode.gain.cancelScheduledValues(currentTime);
     gainNode.gain.linearRampToValueAtTime(gainNode.gain.value, currentTime);
     gainNode.gain.linearRampToValueAtTime(1, currentTime + attack);
 
