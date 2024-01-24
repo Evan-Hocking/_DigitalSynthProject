@@ -56,9 +56,9 @@ document.addEventListener('keyup', function (event) {
         noteUp(note, "1234567890-=backspace`".includes(keyReleased) && keyReleased != "p" && keyReleased != "e");
     }
     //restarts original note if simultaneous notes played
-    if (activeKeys) {
-        noteDown(keyNoteMapping[activeKeys[0]],)
-    }
+    // if (activeKeys) {
+    //     noteDown(keyNoteMapping[activeKeys[0]],)
+    // }
 });
 
 //applies formula to convert midi to the equivalent frequency value
@@ -102,12 +102,16 @@ function updateGain(value) {
 function noteUp(note, isSharp) {
     elem = document.querySelector(`[data-note="${note}"]`);
     elem.style.background = isSharp ? '#777' : 'white';
-    // const releaseTime = getRelease(); // in seconds
-    // releaseEnvelope(releaseTime)
-    // sleep(releaseTime).then(() => {
-    //     stopSound(getFrequency(noteToMIDI(note)));
-    // });
-    stopSound(getFrequency(noteToMIDI(note)));
+    const releaseTime = getRelease(); // in seconds
+    if (activeKeys[0]) {
+        noteDown(keyNoteMapping[activeKeys[activeKeys.length-1]],)
+    } else {
+        releaseEnvelope(releaseTime)
+        sleep(releaseTime).then(() => {
+            stopSound(getFrequency(noteToMIDI(note)));
+        });
+    }
+
 }
 
 //controls behaviour for when a note is pressed
@@ -118,10 +122,7 @@ function noteDown(note, isSharp) {
         event.stopPropagation();
         elem.style.background = isSharp ? 'black' : '#ccc';
         frequency = getFrequency(noteToMIDI(note))
-        // Stop any existing sound before starting a new one
-        if (activeSource) {
-            stopSound();
-        }
+
         // Create a gain node if it doesn't exist
         if (!gainNode) {
             gainNode = audioContext.createGain();
@@ -143,42 +144,39 @@ function sleep(seconds) {
 //stops sound playing
 function stopSound(frequency = -1) {
     if (frequency == activeFrequency || frequency == -1) {
-        const releaseTime = getRelease(); // in seconds
-        releaseEnvelope(releaseTime, frequency)
-        sleep(releaseTime).then(() => {
-            // Retrieve the oscillator associated with the frequency
-            const oscillator = activeSource
 
-            // Check if the oscillator exists and is still playing
-            if (oscillator && oscillator.state !== 'closed') {
-                // Stop and disconnect the oscillator
-                oscillator.stop();
-                oscillator.disconnect();
+        // Retrieve the oscillator associated with the frequency
+        const oscillator = activeSource
 
-                // Remove the oscillator from the map
-                activeSource = null;
-            }
-        });
+        // Check if the oscillator exists and is still playing
+        if (oscillator && oscillator.state !== 'closed') {
+            // Stop and disconnect the oscillator
+            oscillator.stop();
+            oscillator.disconnect();
+
+            // Remove the oscillator from the map
+            activeSource = null;
+        }
+
 
 
     }
 }
 
 function getADS() {
-    attack = document.getElementById("attack").value / 10
-    decay = document.getElementById("decay").value / 10
-    sustain = document.getElementById("sustain").value / 10
+    attack = document.getElementById("attack").value / 100
+    decay = document.getElementById("decay").value / 100
+    sustain = document.getElementById("sustain").value / 100
 
     return attack, decay, sustain
 }
 function getRelease() {
-    return document.getElementById("release").value / 10
+    return document.getElementById("release").value / 100
 }
 function updateADS() {
     attack, decay, sustain, release = getADS()
     const currentTime = audioContext.currentTime;
-    console.log(currentTime)
-    gainNode.gain.linearRampToValueAtTime(0, currentTime);
+    gainNode.gain.linearRampToValueAtTime(gainNode.gain.value, currentTime);
     gainNode.gain.linearRampToValueAtTime(1, currentTime + attack);
 
     // Decay
@@ -216,20 +214,24 @@ function DbToAmpl(dB) {
 
 //plays sound to selected frequency
 function playSound(frequency) {
-    // Create an oscillator node
-    const oscillator = audioContext.createOscillator();
+    if (activeSource) {
+        activeSource.frequency.setValueAtTime(frequency, audioContext.currentTime);
+    } else {
+        // Create an oscillator node
+        const oscillator = audioContext.createOscillator();
 
-    // Set the frequency
-    oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+        // Set the frequency
+        oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
 
-    // Connect the oscillator to the gain node
-    oscillator.connect(gainNode);
-    oscillator.type = document.getElementById("waveform").value
-    // Start and stop the oscillator after a short duration (adjust as needed)
-    oscillator.start();
+        // Connect the oscillator to the gain node
+        oscillator.connect(gainNode);
+        oscillator.type = document.getElementById("waveform").value
+        // Start and stop the oscillator after a short duration (adjust as needed)
+        oscillator.start();
 
 
-    // Store the active source
-    activeSource = oscillator;
+        // Store the active source
+        activeSource = oscillator;
+    }
     activeFrequency = frequency;
 }
