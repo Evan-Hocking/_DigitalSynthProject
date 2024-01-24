@@ -1,4 +1,3 @@
-window.alert("Caution, Please reduce device volume before use")
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 let gainNode = null; // Variable to store the gain node
 let activeSource = null; // Variable to store the currently active source
@@ -99,7 +98,7 @@ function updateGain(value) {
 
 //resets note colours to original and stops calls to stop sound
 function noteUp(note, isSharp) {
-    elem = document.querySelector(`[data-note="${note}"]`);
+    const elem = document.querySelector(`[data-note="${note}"]`);
     elem.style.background = isSharp ? '#777' : 'white';
     const releaseTime = getRelease(); // in seconds
     if (activeKeys[0]) {
@@ -118,7 +117,7 @@ function noteUp(note, isSharp) {
 //controls behaviour for when a note is pressed
 function noteDown(note, isSharp) {
 
-    elem = document.querySelector(`[data-note="${note}"]`);
+    const elem = document.querySelector(`[data-note="${note}"]`);
     if (elem) {
         event.stopPropagation();
         elem.style.background = isSharp ? 'black' : '#ccc';
