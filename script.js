@@ -92,7 +92,6 @@ function noteToMIDI(noteName) {
 
 //updates the gain
 function updateGain(value) {
-
     if (gainNode) {
         gainNode.gain.setValueAtTime(value, audioContext.currentTime);
     }
@@ -171,14 +170,15 @@ function getRelease() {
     return document.getElementById("release").value / 100
 }
 function updateADS() {
+    const amplitude = DbToAmpl(getdB())
     attack, decay, sustain, release = getADS()
     const currentTime = audioContext.currentTime;
     gainNode.gain.cancelScheduledValues(currentTime);
     gainNode.gain.linearRampToValueAtTime(gainNode.gain.value, currentTime);
-    gainNode.gain.linearRampToValueAtTime(1, currentTime + attack);
+    gainNode.gain.linearRampToValueAtTime(amplitude*amplitude, currentTime + attack);
 
     // Decay
-    gainNode.gain.linearRampToValueAtTime(sustain, currentTime + attack + decay);
+    gainNode.gain.linearRampToValueAtTime(sustain*amplitude, currentTime + attack + decay);
 
     // Sustain (no change)
 
