@@ -91,7 +91,7 @@ function noteToMIDI(noteName) {
 
 //updates the gain
 function updateGain(value) {
-    console.log(value)
+
     if (gainNode) {
         gainNode.gain.setValueAtTime(value, audioContext.currentTime);
     }
@@ -201,22 +201,18 @@ function getdB() {
     // Access the current value
     var sliderValue = roundSlider.getValue();
     var dbvolume = 37 * (sliderValue / 100) - 40;
-    // waveform = document.getElementById("waveform").value
-    // console.log(waveform)
-    // if (waveform == "Square" || waveform == "Sawtooth"){
-    //     dbvolume *=0.5
-    // }
+
     return dbvolume;
 }
 //converts decibels to amplitude
 function DbToAmpl(dB) {
     var amplitude = 20 * 10 ** (dB / 20);
     waveform = document.getElementById("waveform").value
-    console.log(waveform)
+
     if (waveform == "square" || waveform == "sawtooth"){
         amplitude *=0.3
     }
-    console.log(amplitude)
+
     return amplitude
 }
 
