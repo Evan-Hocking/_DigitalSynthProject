@@ -40,6 +40,20 @@
 }
 .Volume{
     max-width: 100px;
+    margin-right: 48px;
+    margin: left 48px;
 }
 
+ 
+.effects-container{
+    display: flex;
+    align-items: center;
+}
+.adsr-container{
+    margin-left: 48px;
+}
 
+.slider-container{
+    display: list-item;
+    list-style-type: none;
+}
