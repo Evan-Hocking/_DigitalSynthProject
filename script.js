@@ -39,7 +39,27 @@ document.addEventListener('keydown', function (event) {
         }
     }
 });
+function getConfig() {
+    // Assuming config.json is in the same directory as your HTML/JS file
 
+    return new Promise((resolve, reject) => {
+        fetch('./config.json')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Do something with the JSON data if needed
+                resolve(data);
+            })
+            .catch(error => {
+                console.error('Error loading config:', error);
+                reject(error);
+            });
+    });
+}
 //Event listenter for when a key is released
 document.addEventListener('keyup', function (event) {
     const keyReleased = event.key.toLowerCase();
@@ -175,10 +195,10 @@ function updateADS() {
     const currentTime = audioContext.currentTime;
     gainNode.gain.cancelScheduledValues(currentTime);
     gainNode.gain.linearRampToValueAtTime(gainNode.gain.value, currentTime);
-    gainNode.gain.linearRampToValueAtTime(amplitude*amplitude, currentTime + attack);
+    gainNode.gain.linearRampToValueAtTime(amplitude * amplitude, currentTime + attack);
 
     // Decay
-    gainNode.gain.linearRampToValueAtTime(sustain*amplitude, currentTime + attack + decay);
+    gainNode.gain.linearRampToValueAtTime(sustain * amplitude, currentTime + attack + decay);
 
     // Sustain (no change)
 
@@ -208,16 +228,26 @@ function getdB() {
 function DbToAmpl(dB) {
     var amplitude = 20 * 10 ** (dB / 20);
     waveform = document.getElementById("waveform").value
-
-    if (waveform == "square" || waveform == "sawtooth"){
-        amplitude *=0.3
-    }
+    getConfig().then(configData => {
+        amplitude_multiplier = configData.config.waveAmplitudeMultiplyer[waveform]
+        console.log(amplitude_multiplier)
+        amplitude *= amplitude_multiplier
+        console.log(amplitude)
+    }).catch(error => {
+        console.error('Error getting config:', error);
+    });
+    
+    // amplitude * amplitude_multipliers.waveform
+    // if (waveform == "square" || waveform == "sawtooth") {
+    //     amplitude *= 0.35
+    // }
 
     return amplitude
 }
 
 //plays sound to selected frequency
 function playSound(frequency) {
+    getConfig()
     if (activeSource) {
         activeSource.frequency.setValueAtTime(frequency, audioContext.currentTime);
     } else {
@@ -239,3 +269,4 @@ function playSound(frequency) {
     }
     activeFrequency = frequency;
 }
+getConfig()

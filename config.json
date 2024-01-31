@@ -1,0 +1,10 @@
+{
+    "config":{
+        "waveAmplitudeMultiplyer":{
+            "sine": 1,
+            "square":0.35,
+            "sawtooth":0.35,
+            "triangle":1
+        }
+    }
+}
