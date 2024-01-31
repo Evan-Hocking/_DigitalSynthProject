@@ -271,13 +271,14 @@ function playSound(frequency) {
     activeFrequency = frequency;
 }
 
+function getModules() {
 
+    fetch(`${serverUrl}/get_files`)
+        .then(response => response.json())
+        .then(files => {
+            console.log(files);
 
-fetch(`${serverUrl}/get_files`)
-    .then(response => response.json())
-    .then(files => {
-        console.log(files);
-
-    })
-    .catch(error => console.error('Error fetching files:', error));
-
+        })
+        .catch(error => console.error('Error fetching files:', error));
+}
+getModules()
