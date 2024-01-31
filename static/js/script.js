@@ -1,3 +1,4 @@
+const serverUrl = window.location.origin;
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 let gainNode = null; // Variable to store the gain node
 let activeSource = null; // Variable to store the currently active source
@@ -43,7 +44,7 @@ function getConfig() {
     // Assuming config.json is in the same directory as your HTML/JS file
 
     return new Promise((resolve, reject) => {
-        fetch('./config.json')
+        fetch(`${serverUrl}/get_config`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
@@ -230,13 +231,13 @@ function DbToAmpl(dB) {
     waveform = document.getElementById("waveform").value
     getConfig().then(configData => {
         amplitude_multiplier = configData.config.waveAmplitudeMultiplyer[waveform]
-        console.log(amplitude_multiplier)
+
         amplitude *= amplitude_multiplier
-        console.log(amplitude)
+
     }).catch(error => {
         console.error('Error getting config:', error);
     });
-    
+
     // amplitude * amplitude_multipliers.waveform
     // if (waveform == "square" || waveform == "sawtooth") {
     //     amplitude *= 0.35
@@ -269,4 +270,14 @@ function playSound(frequency) {
     }
     activeFrequency = frequency;
 }
+
+
+
+fetch(`${serverUrl}/get_files`)
+    .then(response => response.json())
+    .then(files => {
+        console.log(files);
+
+    })
+    .catch(error => console.error('Error fetching files:', error));
 
