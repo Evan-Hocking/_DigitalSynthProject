@@ -269,4 +269,4 @@ function playSound(frequency) {
     }
     activeFrequency = frequency;
 }
-getConfig()
+
