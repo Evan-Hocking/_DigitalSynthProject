@@ -6,6 +6,36 @@ let activeFrequency = null;
 
 const activeKeys = []
 
+const analyser = new AnalyserNode(audioContext, {
+    smoothingTimeConstant: 1,
+    fftSize: 2048
+})
+const dataArray = new Uint8Array(analyser.frequencyBinCount);
+let c = null;
+document.addEventListener("DOMContentLoaded", function () {
+    const canvas = document.getElementById("canvas")
+
+    c = canvas.getContext("2d")
+
+
+    canvas.width = window.innerWidth;
+    canvas.height = 200;
+    pixelRatio = window.devicePixelRatio;
+    sizeOnScreen = canvas.getBoundingClientRect();
+    canvas.width = sizeOnScreen.width * pixelRatio;
+    canvas.height = sizeOnScreen.height * pixelRatio;
+    canvas.style.width = canvas.width / pixelRatio + "px";
+    canvas.style.height = canvas.height / pixelRatio + "px";
+    c.fillStyle = "#181818";
+    c.fillRect(0, 0, canvas.width, canvas.height);
+    c.strokeStyle = "#33ee55";
+    c.beginPath();
+    c.moveTo(0, canvas.height / 2);
+    c.lineTo(canvas.width, canvas.height / 10);
+    c.stroke();
+});
+
+
 //maps keyboard keys to equivalent notes
 const keyNoteMapping = {
     'tab': 'C4', '1': 'C#4', 'q': 'D4', '2': 'D#4',
@@ -262,7 +292,10 @@ function playSound(frequency) {
         oscillator.connect(gainNode);
         oscillator.type = document.getElementById("waveform").value
         // Start and stop the oscillator after a short duration (adjust as needed)
+        gainNode.connect(analyser);
+        analyser.connect(audioContext.destination);
         oscillator.start();
+        draw();
 
 
         // Store the active source
@@ -282,3 +315,22 @@ function getModules() {
         .catch(error => console.error('Error fetching files:', error));
 }
 getModules()
+
+const draw = () => {
+    analyser.getByteTimeDomainData(dataArray);
+    segmentWidth = canvas.width / analyser.frequencyBinCount;
+    c.fillRect(0, 0, canvas.width, canvas.height);
+    c.beginPath();
+    c.moveTo(-100, canvas.height / 2);
+
+    for (let i = 1; i < analyser.frequencyBinCount; i += 1) {
+        let x = i * segmentWidth;
+        let v = dataArray[i] / 128.0;
+        let y = (v * canvas.height) / 2;
+        c.lineTo(x, y);
+    }
+
+    c.lineTo(canvas.width + 100, canvas.height / 2);
+    c.stroke();
+    requestAnimationFrame(draw);
+};
