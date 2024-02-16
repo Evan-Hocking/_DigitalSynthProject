@@ -1,12 +1,12 @@
 const serverUrl = window.location.origin;
-const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+const ctx = new (window.AudioContext || window.webkitAudioContext)();
 let gainNode = null; // Variable to store the gain node
 let activeSource = null; // Variable to store the currently active source
 let activeFrequency = null;
 
 const activeKeys = []
 
-const analyser = new AnalyserNode(audioContext, {
+const analyser = new AnalyserNode(ctx, {
     smoothingTimeConstant: 1,
     fftSize: 2048
 })
@@ -144,7 +144,7 @@ function noteToMIDI(noteName) {
 function updateGain(value) {
 
     if (gainNode) {
-        gainNode.gain.setValueAtTime(value, audioContext.currentTime);
+        gainNode.gain.setValueAtTime(value, ctx.currentTime);
     }
 }
 
@@ -175,17 +175,7 @@ function noteDown(note, isSharp) {
         elem.style.background = isSharp ? 'black' : '#ccc';
         frequency = getFrequency(noteToMIDI(note))
 
-        // Create a gain node if it doesn't exist
-        if (!gainNode) {
-            gainNode = audioContext.createGain();
-            gainNode.connect(audioContext.destination);
-        }
 
-        // Update the gain value (you can pass any desired value)
-        const amplitude = DbToAmpl(getdB())
-
-        updateGain(amplitude);
-        updateADS()
         // Play the sound with the current gain
         playSound(frequency);
     }
@@ -223,7 +213,7 @@ function getRelease() {
 function updateADS() {
     const amplitude = DbToAmpl(getdB())
     attack, decay, sustain, release = getADS()
-    const currentTime = audioContext.currentTime;
+    const currentTime = ctx.currentTime;
     gainNode.gain.cancelScheduledValues(currentTime);
     gainNode.gain.linearRampToValueAtTime(gainNode.gain.value, currentTime);
     gainNode.gain.linearRampToValueAtTime(amplitude * amplitude, currentTime + attack);
@@ -237,7 +227,7 @@ function updateADS() {
 }
 function releaseEnvelope(releaseTime) {
 
-    const currentTime = audioContext.currentTime;
+    const currentTime = ctx.currentTime;
     gainNode.gain.cancelScheduledValues(currentTime);
     gainNode.gain.linearRampToValueAtTime(gainNode.gain.value, currentTime)
     // Release
@@ -268,11 +258,6 @@ function DbToAmpl(dB) {
         console.error('Error getting config:', error);
     });
 
-    // amplitude * amplitude_multipliers.waveform
-    // if (waveform == "square" || waveform == "sawtooth") {
-    //     amplitude *= 0.35
-    // }
-
     return amplitude
 }
 
@@ -280,28 +265,43 @@ function DbToAmpl(dB) {
 function playSound(frequency) {
     getConfig()
     if (activeSource) {
-        activeSource.frequency.setValueAtTime(frequency, audioContext.currentTime);
+        activeSource.frequency.setValueAtTime(frequency, ctx.currentTime);
     } else {
         // Create an oscillator node
-        const oscillator = audioContext.createOscillator();
+        const osc = ctx.createOscillator();
+        osc.type = document.getElementById("waveform").value
+        osc.frequency.value = frequency
 
-        // Set the frequency
-        oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
 
-        // Connect the oscillator to the gain node
-        oscillator.connect(gainNode);
-        oscillator.type = document.getElementById("waveform").value
+        gainNode = ctx.createGain();
+        updateADS()
+        
+
+        const filter = ctx.createBiquadFilter();
+
+
+            
+        filter.frequency.value = 1000
+        
+        
+
         // Start and stop the oscillator after a short duration (adjust as needed)
-        gainNode.connect(analyser);
-        analyser.connect(audioContext.destination);
-        oscillator.start();
+        osc.connect(gainNode);
+        gainNode.connect(filter)
+        filter.connect(analyser)
+        analyser.connect(ctx.destination);
+
+
+        osc.start();
         draw();
+        console.log(frequency)
 
 
         // Store the active source
-        activeSource = oscillator;
+        activeSource = osc;
     }
     activeFrequency = frequency;
+
 }
 
 function getModules() {
@@ -334,3 +334,8 @@ const draw = () => {
     c.stroke();
     requestAnimationFrame(draw);
 };
+
+
+
+
+
