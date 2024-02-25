@@ -266,6 +266,7 @@ function playSound(frequency) {
     getConfig()
     if (activeSource) {
         activeSource.frequency.setValueAtTime(frequency, ctx.currentTime);
+        updateADS()
     } else {
         // Create an oscillator node
         const osc = ctx.createOscillator();
