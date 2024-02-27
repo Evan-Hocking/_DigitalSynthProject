@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, send_from_directory, render_template
+from flask import Flask, jsonify, send_from_directory, render_template, make_response
 import os
 import json
 
@@ -12,7 +12,10 @@ def index():
 # Serve static files from the 'static' folder
 @app.route('/static/<path:filename>')
 def serve_static(filename):
-    return send_from_directory('static', filename)
+    response = make_response(send_from_directory('static', filename))
+    if filename.endswith('.js'):
+        response.headers['Content-Type'] = 'application/javascript; charset=utf-8; module'
+    return response
 
 # API endpoint to get the list of files
 @app.route('/get_files')

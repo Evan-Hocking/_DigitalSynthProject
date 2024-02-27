@@ -1,4 +1,4 @@
-export function initlowpass() {
+export function init() {
     const data = {
         name: "Lowpass",
         file: "lowpass.js",
