@@ -3,6 +3,8 @@ const ctx = new (window.AudioContext || window.webkitAudioContext)();
 let gainNode = null; // Variable to store the gain node
 let activeSource = null; // Variable to store the currently active source
 let activeFrequency = null;
+const sampleRate = ctx.sampleRate;
+let activeFilters = []
 
 const activeKeys = []
 
@@ -278,24 +280,17 @@ function playSound(frequency) {
         updateADS()
         
 
-        const filter = ctx.createBiquadFilter();
-
-
-            
-        filter.frequency.value = 1000
+        
         
         
 
         // Start and stop the oscillator after a short duration (adjust as needed)
-        osc.connect(gainNode);
-        gainNode.connect(filter)
-        filter.connect(analyser)
-        analyser.connect(ctx.destination);
-
+        activeFilters.push(gainNode)
+        osc.connect(gainNode)
+        buildSignalChain()
 
         osc.start();
         draw();
-        console.log(frequency)
 
 
         // Store the active source
@@ -303,6 +298,21 @@ function playSound(frequency) {
     }
     activeFrequency = frequency;
 
+}
+
+function buildSignalChain() {
+    if (activeFilters.length > 1) {
+        for (var i = 0; i < activeFilters.length - 1; i++) {
+            var currentNode = activeFilters[i];
+            var nextNode = activeFilters[i + 1];
+            currentNode.connect(nextNode);
+        }
+    }
+
+    // Connect the last element in the chain to the destination
+    var lastNode = activeFilters[activeFilters.length - 1];
+    lastNode.connect(analyser);
+    analyser.connect(ctx.destination)
 }
 
 function getModules() {
