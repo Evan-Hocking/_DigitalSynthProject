@@ -392,27 +392,17 @@ function playSound(frequency) {
         availableFilters[filterKeys[i]].updateParam(activeFilters[filterKeys[i]],filterKeys[i])
 
     }
-
+    updateADS()
 
 
 
     if (activeSource) {
         activeSource.frequency.setValueAtTime(frequency, ctx.currentTime);
-        updateADS()
     } else {
         // Create an oscillator node
         const osc = ctx.createOscillator();
         osc.type = document.getElementById("waveform").value
         osc.frequency.value = frequency
-
-
-        updateADS()
-
-
-
-
-
-
         // Start and stop the oscillator after a short duration (adjust as needed)
 
         buildSignalChain(osc)
