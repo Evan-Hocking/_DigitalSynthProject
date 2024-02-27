@@ -63,3 +63,7 @@
     bottom: 0;
     background-color: #181818;
   }
+
+  #filtersList {
+    background-color: #777;
+  }

@@ -1,16 +1,128 @@
 const serverUrl = window.location.origin;
 const ctx = new (window.AudioContext || window.webkitAudioContext)();
 const sampleRate = ctx.sampleRate;
-let gainNode = null; // Variable to store the gain node
+let gainNode = ctx.createGain(); // Variable to store the gain node
 let activeSource = null; // Variable to store the currently active source
 let activeFrequency = null;
-let activeFilters = []
+let activeFilters = { "gainNode": gainNode }
 const activeKeys = []
 
 let availableFilters = {}
 
 import * as lowpass from "./filters/lowpass.mjs"
 availableFilters["lowpass"] = lowpass
+
+
+const addFilter = document.getElementById('addFilter');
+addFilter.addEventListener('click', event => {
+    event.stopPropagation(); // Prevent the document click listener from immediately hiding the list
+    showFilterList();
+});
+
+function createFilterList() {
+    const filterNames = Object.keys(availableFilters);
+    console.log(availableFilters)
+    const filterList = document.createElement('ul');
+
+    filterNames.forEach(filterName => {
+        const listItem = document.createElement('li');
+        listItem.textContent = filterName;
+        listItem.addEventListener('click', () => {
+            bldFilter(filterName);
+            hideFilterList();
+        });
+        filterList.appendChild(listItem);
+    });
+    const filtersList = document.createElement('div')
+    filtersList.id = 'filtersList'
+    filtersList.appendChild(filterList)
+    return filtersList;
+}
+
+function showFilterList() {
+    const filterList = createFilterList();
+    const addFilter = document.getElementById('addFilter');
+    addFilter.insertAdjacentElement('beforebegin', filterList);
+    addFilter.remove()
+    // Hide the filter list when clicking outside of it
+    document.addEventListener('click', hideFilterListOnClickOutside);
+}
+
+function hideFilterList() {
+    const filterList = document.querySelector('#addFilter + ul');
+    if (filterList) {
+        filterList.remove();
+        document.removeEventListener('click', hideFilterListOnClickOutside);
+    }
+}
+
+// Function to hide the filter list when clicking outside of it
+function hideFilterListOnClickOutside(event) {
+    const filterList = document.querySelector('#addFilter + ul');
+    const addFilter = document.getElementById('addFilter');
+    if (filterList && !filterList.contains(event.target) && event.target !== addFilter) {
+        hideFilterList();
+    }
+}
+
+
+// function bldFilter(filterName){
+//     availableFilters[filterName].buildui(filterName,sampleRate)
+//     document.querySelector('.add-container').remove()
+
+
+//     filter = availableFilters[filterName].buildFilter(ctx)
+//     activeFilters[filterName] = filter
+
+// }
+function bldFilter(filterName) {
+    return new Promise((resolve, reject) => {
+        // Build UI for the filter
+        availableFilters[filterName].buildui(filterName, sampleRate)
+            .then(() => {
+                // Remove add-container after UI is built
+                const addContainer = document.querySelector('.add-container');
+                if (addContainer) {
+                    addContainer.remove();
+                } else {
+                    reject('Add container not found');
+                }
+                // Build the filter
+                const filter = availableFilters[filterName].buildFilter(ctx, filterName);
+                // Store the filter in activeFilters
+                activeFilters[filterName] = filter;
+                // Resolve the promise
+                resolve();
+                console.log(activeFilters)
+            })
+            .catch(error => {
+                reject(error);
+            });
+    });
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 const analyser = new AnalyserNode(ctx, {
     smoothingTimeConstant: 1,
@@ -220,7 +332,7 @@ function getRelease() {
 function updateADS() {
     const amplitude = DbToAmpl(getdB())
     const [attack, decay, sustain] = getADS()
-    
+
     const currentTime = ctx.currentTime;
     gainNode.gain.cancelScheduledValues(currentTime);
     gainNode.gain.linearRampToValueAtTime(gainNode.gain.value, currentTime);
@@ -273,6 +385,17 @@ function DbToAmpl(dB) {
 //plays sound to selected frequency
 function playSound(frequency) {
     getConfig()
+    const filterKeys = Object.keys(activeFilters);
+
+    for (let i = 1; i < filterKeys.length; i++) {
+        console.log(filterKeys[i])
+        availableFilters[filterKeys[i]].updateParam(activeFilters[filterKeys[i]],filterKeys[i])
+
+    }
+
+
+
+
     if (activeSource) {
         activeSource.frequency.setValueAtTime(frequency, ctx.currentTime);
         updateADS()
@@ -283,18 +406,16 @@ function playSound(frequency) {
         osc.frequency.value = frequency
 
 
-        gainNode = ctx.createGain();
         updateADS()
-        
 
-        
-        
-        
+
+
+
+
 
         // Start and stop the oscillator after a short duration (adjust as needed)
-        activeFilters.push(gainNode)
-        osc.connect(gainNode)
-        buildSignalChain()
+
+        buildSignalChain(osc)
 
         osc.start();
         draw();
@@ -307,32 +428,38 @@ function playSound(frequency) {
 
 }
 
-function buildSignalChain() {
-    if (activeFilters.length > 1) {
-        for (var i = 0; i < activeFilters.length - 1; i++) {
-            var currentNode = activeFilters[i];
-            var nextNode = activeFilters[i + 1];
+function buildSignalChain(osc) {
+    const filterKeys = Object.keys(activeFilters);
+
+    if (filterKeys.length > 1) {
+        osc.connect(activeFilters[filterKeys[0]]);
+        for (let i = 0; i < filterKeys.length - 1; i++) {
+            const currentNode = activeFilters[filterKeys[i]];
+            const nextNode = activeFilters[filterKeys[i + 1]];
+            console.log(currentNode + nextNode)
             currentNode.connect(nextNode);
         }
     }
 
     // Connect the last element in the chain to the destination
-    var lastNode = activeFilters[activeFilters.length - 1];
+    const lastKey = filterKeys[filterKeys.length - 1];
+    const lastNode = activeFilters[lastKey];
     lastNode.connect(analyser);
-    analyser.connect(ctx.destination)
+    analyser.connect(ctx.destination);
 }
 
-function getModules() {
 
-    fetch(`${serverUrl}/get_files`)
-        .then(response => response.json())
-        .then(files => {
-            console.log(files);
+// function getModules() {
 
-        })
-        .catch(error => console.error('Error fetching files:', error));
-}
-getModules()
+//     fetch(`${serverUrl}/get_files`)
+//         .then(response => response.json())
+//         .then(files => {
+//             console.log(files);
+
+//         })
+//         .catch(error => console.error('Error fetching files:', error));
+// }
+// getModules()
 
 const draw = () => {
     analyser.getByteTimeDomainData(dataArray);
