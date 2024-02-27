@@ -1,12 +1,16 @@
 const serverUrl = window.location.origin;
 const ctx = new (window.AudioContext || window.webkitAudioContext)();
+const sampleRate = ctx.sampleRate;
 let gainNode = null; // Variable to store the gain node
 let activeSource = null; // Variable to store the currently active source
 let activeFrequency = null;
-const sampleRate = ctx.sampleRate;
 let activeFilters = []
-
 const activeKeys = []
+
+let availableFilters = {}
+
+import * as lowpass from "./filters/lowpass.mjs"
+availableFilters["lowpass"] = lowpass
 
 const analyser = new AnalyserNode(ctx, {
     smoothingTimeConstant: 1,
@@ -22,8 +26,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     canvas.width = window.innerWidth;
     canvas.height = 200;
-    pixelRatio = window.devicePixelRatio;
-    sizeOnScreen = canvas.getBoundingClientRect();
+    const pixelRatio = window.devicePixelRatio;
+    const sizeOnScreen = canvas.getBoundingClientRect();
     canvas.width = sizeOnScreen.width * pixelRatio;
     canvas.height = sizeOnScreen.height * pixelRatio;
     canvas.style.width = canvas.width / pixelRatio + "px";
@@ -175,7 +179,7 @@ function noteDown(note, isSharp) {
     if (elem) {
         event.stopPropagation();
         elem.style.background = isSharp ? 'black' : '#ccc';
-        frequency = getFrequency(noteToMIDI(note))
+        var frequency = getFrequency(noteToMIDI(note))
 
 
         // Play the sound with the current gain
@@ -203,22 +207,25 @@ function stopSound(frequency = -1) {
 }
 
 function getADS() {
-    attack = document.getElementById("attack").value / 100
-    decay = document.getElementById("decay").value / 100
-    sustain = document.getElementById("sustain").value / 100
+    var attack = document.getElementById("attack").value / 100
+    var decay = document.getElementById("decay").value / 100
+    var sustain = document.getElementById("sustain").value / 100
 
-    return attack, decay, sustain
+
+    return [attack, decay, sustain]
 }
 function getRelease() {
     return document.getElementById("release").value / 100
 }
 function updateADS() {
     const amplitude = DbToAmpl(getdB())
-    attack, decay, sustain, release = getADS()
+    const [attack, decay, sustain] = getADS()
+    
     const currentTime = ctx.currentTime;
     gainNode.gain.cancelScheduledValues(currentTime);
     gainNode.gain.linearRampToValueAtTime(gainNode.gain.value, currentTime);
-    gainNode.gain.linearRampToValueAtTime(amplitude * amplitude, currentTime + attack);
+
+    gainNode.gain.linearRampToValueAtTime(amplitude, currentTime + attack);
 
     // Decay
     gainNode.gain.linearRampToValueAtTime(sustain * amplitude, currentTime + attack + decay);
@@ -250,9 +257,9 @@ function getdB() {
 //converts decibels to amplitude
 function DbToAmpl(dB) {
     var amplitude = 20 * 10 ** (dB / 20);
-    waveform = document.getElementById("waveform").value
+    var waveform = document.getElementById("waveform").value
     getConfig().then(configData => {
-        amplitude_multiplier = configData.config.waveAmplitudeMultiplyer[waveform]
+        var amplitude_multiplier = configData.config.waveAmplitudeMultiplyer[waveform]
 
         amplitude *= amplitude_multiplier
 
@@ -329,7 +336,7 @@ getModules()
 
 const draw = () => {
     analyser.getByteTimeDomainData(dataArray);
-    segmentWidth = canvas.width / analyser.frequencyBinCount;
+    const segmentWidth = canvas.width / analyser.frequencyBinCount;
     c.fillRect(0, 0, canvas.width, canvas.height);
     c.beginPath();
     c.moveTo(-100, canvas.height / 2);

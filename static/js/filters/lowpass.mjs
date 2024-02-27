@@ -1,7 +1,7 @@
 export function init() {
     const data = {
         name: "Lowpass",
-        file: "lowpass.js",
+        file: "lowpass.mjs",
         description: "Filters out frequencies above specified value"
     }
     return data;

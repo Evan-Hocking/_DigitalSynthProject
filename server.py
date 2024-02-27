@@ -13,7 +13,7 @@ def index():
 @app.route('/static/<path:filename>')
 def serve_static(filename):
     response = make_response(send_from_directory('static', filename))
-    if filename.endswith('.js'):
+    if filename.endswith('.mjs'):
         response.headers['Content-Type'] = 'application/javascript; charset=utf-8; module'
     return response
 
