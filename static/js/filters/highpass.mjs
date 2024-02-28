@@ -1,8 +1,8 @@
 export function init() {
     const data = {
-        name: "Lowpass",
-        file: "lowpass.mjs",
-        description: "Filters out frequencies above specified value"
+        name: "Highpass",
+        file: "highpass.mjs",
+        description: "Filters out frequencies below specified value"
     }
     return data;
 }
@@ -27,8 +27,8 @@ export function buildui(filterID, sampleRate, removeParentDiv) {
         freqSlider.type = "range";
         freqSlider.id = filterID + "freq";
         freqSlider.min = 20;
-        freqSlider.max = sampleRate / 8;
-        freqSlider.value = sampleRate / 32;
+        freqSlider.max = sampleRate / 4;
+        freqSlider.value = sampleRate / 8;
         freqcontainer.appendChild(freqSlider);
 
 
@@ -74,7 +74,7 @@ export function getParam(filterID) {
 
 export function buildFilter(ctx,filterID) {
     var filter = ctx.createBiquadFilter();
-    filter.type = 'lowpass'
+    filter.type = 'highpass'
     const [freq, Qvalue] = getParam(filterID)
     filter.frequency.value = freq
     filter.Q.value = Qvalue

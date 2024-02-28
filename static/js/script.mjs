@@ -2,7 +2,8 @@ const serverUrl = window.location.origin;
 const ctx = new (window.AudioContext || window.webkitAudioContext)();
 const sampleRate = ctx.sampleRate;
 let gainNode = ctx.createGain(); // Variable to store the gain node
-let activeSource = null; // Variable to store the currently active source
+let activeSource = ctx.createOscillator();; // Variable to store the currently active source
+
 let activeFrequency = null;
 let activeFilters = { "gainNode": gainNode }
 const activeKeys = []
@@ -11,6 +12,9 @@ let availableFilters = {}
 
 import * as lowpass from "./filters/lowpass.mjs"
 availableFilters["lowpass"] = lowpass
+
+import * as highpass from "./filters/highpass.mjs"
+availableFilters["highpass"] = highpass
 
 
 const addFilter = document.getElementById('addFilter');
@@ -21,7 +25,6 @@ addFilter.addEventListener('click', event => {
 
 function createFilterList() {
     const filterNames = Object.keys(availableFilters);
-    console.log(availableFilters)
     const filterList = document.createElement('ul');
 
     filterNames.forEach(filterName => {
@@ -64,21 +67,10 @@ function hideFilterListOnClickOutside(event) {
         hideFilterList();
     }
 }
-
-
-// function bldFilter(filterName){
-//     availableFilters[filterName].buildui(filterName,sampleRate)
-//     document.querySelector('.add-container').remove()
-
-
-//     filter = availableFilters[filterName].buildFilter(ctx)
-//     activeFilters[filterName] = filter
-
-// }
 function bldFilter(filterName) {
     return new Promise((resolve, reject) => {
         // Build UI for the filter
-        availableFilters[filterName].buildui(filterName, sampleRate)
+        availableFilters[filterName].buildui(filterName, sampleRate, removeParentDiv)
             .then(() => {
                 // Remove add-container after UI is built
                 const addContainer = document.querySelector('.add-container');
@@ -93,7 +85,8 @@ function bldFilter(filterName) {
                 activeFilters[filterName] = filter;
                 // Resolve the promise
                 resolve();
-                console.log(activeFilters)
+                buildAdd()
+                buildSignalChain()
             })
             .catch(error => {
                 reject(error);
@@ -102,8 +95,37 @@ function bldFilter(filterName) {
 
 }
 
+function removeParentDiv(event) {
+    // Get the parent div of the button
+    const parentDiv = event.target.parentElement;
+    const FilterID = parentDiv.className.replace("-container", "");
+    activeFilters[FilterID].disconnect
+    delete activeFilters[FilterID]
 
 
+
+    buildSignalChain()
+
+    // Remove the parent div
+    parentDiv.remove();
+}
+
+function buildAdd() {
+    const container = document.querySelector(".effects-container")
+    const addContainer = document.createElement('div');
+    addContainer.classList.add('add-container');
+
+    // Create the button
+    const addButton = document.createElement('button');
+    addButton.id = 'addFilter';
+    addButton.textContent = '+';
+    addButton.addEventListener('click', showFilterList);
+
+    // Append the button to the container div
+    addContainer.appendChild(addButton);
+
+    container.appendChild(addContainer)
+}
 
 
 
@@ -174,12 +196,13 @@ document.addEventListener('keydown', function (event) {
     const keyPressed = event.key.toLowerCase();
 
     //tests if key is already playing
-    if (!activeKeys.includes(keyPressed)) {
-        activeKeys.push(keyPressed);
 
 
-        // Check if the pressed key is in the mapping
-        if (keyNoteMapping.hasOwnProperty(keyPressed)) {
+
+    // Check if the pressed key is in the mapping
+    if (keyNoteMapping.hasOwnProperty(keyPressed)) {
+        if (!activeKeys.includes(keyPressed)) {
+            activeKeys.push(keyPressed);
             const note = keyNoteMapping[keyPressed];
 
 
@@ -258,13 +281,6 @@ function noteToMIDI(noteName) {
     }
 }
 
-//updates the gain
-function updateGain(value) {
-
-    if (gainNode) {
-        gainNode.gain.setValueAtTime(value, ctx.currentTime);
-    }
-}
 
 //resets note colours to original and stops calls to stop sound
 function noteUp(note, isSharp) {
@@ -275,11 +291,11 @@ function noteUp(note, isSharp) {
         noteDown(keyNoteMapping[activeKeys[activeKeys.length - 1]],)
     } else {
         releaseEnvelope(releaseTime)
-        sleep(releaseTime).then(() => {
-            if (!activeKeys[0]) {
-                stopSound(getFrequency(noteToMIDI(note)));
-            }
-        });
+        // sleep(releaseTime+1).then(() => {
+        //     if (!activeKeys[0]) {
+        //         stopSound(getFrequency(noteToMIDI(note)));
+        //     }
+        // });
     }
 
 }
@@ -388,48 +404,48 @@ function playSound(frequency) {
     const filterKeys = Object.keys(activeFilters);
 
     for (let i = 1; i < filterKeys.length; i++) {
-        console.log(filterKeys[i])
-        availableFilters[filterKeys[i]].updateParam(activeFilters[filterKeys[i]],filterKeys[i])
+        availableFilters[filterKeys[i]].updateParam(activeFilters[filterKeys[i]], filterKeys[i])
 
     }
     updateADS()
 
 
-
-    if (activeSource) {
+    if (activeFrequency) {
         activeSource.frequency.setValueAtTime(frequency, ctx.currentTime);
     } else {
+
         // Create an oscillator node
-        const osc = ctx.createOscillator();
-        osc.type = document.getElementById("waveform").value
-        osc.frequency.value = frequency
+        // const osc = ctx.createOscillator();
+        // activeSource.type = document.getElementById("waveform").value
+        activeSource.frequency.value = frequency
         // Start and stop the oscillator after a short duration (adjust as needed)
 
-        buildSignalChain(osc)
+        buildSignalChain()
 
-        osc.start();
+        activeSource.start();
         draw();
 
 
         // Store the active source
-        activeSource = osc;
+        // activeSource = osc;
     }
     activeFrequency = frequency;
 
 }
 
-function buildSignalChain(osc) {
+function buildSignalChain() {
     const filterKeys = Object.keys(activeFilters);
-
-    if (filterKeys.length > 1) {
-        osc.connect(activeFilters[filterKeys[0]]);
-        for (let i = 0; i < filterKeys.length - 1; i++) {
-            const currentNode = activeFilters[filterKeys[i]];
-            const nextNode = activeFilters[filterKeys[i + 1]];
-            console.log(currentNode + nextNode)
-            currentNode.connect(nextNode);
-        }
+    activeSource.disconnect()
+    for (let i = 0; i < filterKeys.length; i++) {
+        activeFilters[filterKeys[i]].disconnect()
     }
+    activeSource.connect(activeFilters[filterKeys[0]]);
+    for (let i = 0; i < filterKeys.length - 1; i++) {
+        const currentNode = activeFilters[filterKeys[i]];
+        const nextNode = activeFilters[filterKeys[i + 1]];
+        currentNode.connect(nextNode);
+    }
+
 
     // Connect the last element in the chain to the destination
     const lastKey = filterKeys[filterKeys.length - 1];
@@ -474,3 +490,12 @@ const draw = () => {
 
 
 
+
+const waveformSelect = document.getElementById('waveform');
+
+waveformSelect.addEventListener('change', function (event) {
+    const selectedWaveform = event.target.value;
+    activeSource.type = selectedWaveform
+    // You can perform actions based on the selected waveform here,
+    // such as changing the waveform of an oscillator.
+});
