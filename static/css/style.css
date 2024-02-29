@@ -48,6 +48,9 @@
 .effects-container{
     display: flex;
     align-items: center;
+    width: 100%; /* Adjust as needed */
+    overflow-x: auto; /* or overflow-x: scroll; */
+    white-space: nowrap; /* Prevent content from wrapping */
 }
 .adsr-container{
     margin-left: 48px;
