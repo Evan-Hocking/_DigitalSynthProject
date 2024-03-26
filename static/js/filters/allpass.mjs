@@ -1,8 +1,8 @@
 export function init() {
     const data = {
-        name: "Lowpass",
-        file: "lowpass.mjs",
-        description: "Filters out frequencies above specified value"
+        name: "allpass",
+        file: "allpass.mjs",
+        description: "lets all frequencies through but changes phase relationship"
     }
     return data;
 }
@@ -15,7 +15,7 @@ export function buildui(filterID, sampleRate, removeParentDiv) {
         container.className = filterID + "-container"
 
         var FilterName = document.createElement("h3")
-        FilterName.textContent = 'Low Pass'
+        FilterName.textContent = 'All Pass'
         container.appendChild(FilterName)
 
         // Create frequency slider
@@ -77,7 +77,7 @@ export function getParam(filterID) {
 
 export function buildFilter(ctx,filterID) {
     var filter = ctx.createBiquadFilter();
-    filter.type = 'lowpass'
+    filter.type = 'allpass'
     const [freq, Qvalue] = getParam(filterID)
     filter.frequency.value = freq
     filter.Q.value = Qvalue

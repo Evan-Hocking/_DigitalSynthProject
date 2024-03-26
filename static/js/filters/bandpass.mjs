@@ -1,8 +1,8 @@
 export function init() {
     const data = {
-        name: "Lowpass",
-        file: "lowpass.mjs",
-        description: "Filters out frequencies above specified value"
+        name: "BandPass",
+        file: "bandpass.mjs",
+        description: "Atenuates frequencies outside of band"
     }
     return data;
 }
@@ -15,7 +15,7 @@ export function buildui(filterID, sampleRate, removeParentDiv) {
         container.className = filterID + "-container"
 
         var FilterName = document.createElement("h3")
-        FilterName.textContent = 'Low Pass'
+        FilterName.textContent = 'Band Pass'
         container.appendChild(FilterName)
 
         // Create frequency slider
@@ -42,7 +42,7 @@ export function buildui(filterID, sampleRate, removeParentDiv) {
 
         const qlabel = document.createElement('label');
         qlabel.setAttribute('for', filterID+'Q');  
-        qlabel.textContent = 'Resonance';
+        qlabel.textContent = 'width';
         qcontainer.appendChild(qlabel);
 
         var qSlider = document.createElement("input");
@@ -77,7 +77,7 @@ export function getParam(filterID) {
 
 export function buildFilter(ctx,filterID) {
     var filter = ctx.createBiquadFilter();
-    filter.type = 'lowpass'
+    filter.type = 'bandpass'
     const [freq, Qvalue] = getParam(filterID)
     filter.frequency.value = freq
     filter.Q.value = Qvalue

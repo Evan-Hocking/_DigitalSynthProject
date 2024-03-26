@@ -10,10 +10,12 @@ export function init() {
 export function buildui(filterID, sampleRate, removeParentDiv) {
     return new Promise((resolve, reject) => {
         var filterContainer = document.querySelector(".effects-container");
-
         var container = document.createElement("div");
         container.className = filterID + "-container"
 
+        var FilterName = document.createElement("h3")
+        FilterName.textContent = filterID
+        container.appendChild(FilterName)
         
 
         var remove = document.createElement("button")

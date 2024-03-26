@@ -14,6 +14,10 @@ export function buildui(filterID, sampleRate, removeParentDiv) {
         var container = document.createElement("div");
         container.className = filterID + "-container"
 
+        var FilterName = document.createElement("h3")
+        FilterName.textContent = "High pass"
+        container.appendChild(FilterName)
+
         // Create frequency slider
         var freqcontainer = document.createElement("div")
         freqcontainer.className = "slider-container"

@@ -1,8 +1,8 @@
 export function init() {
     const data = {
-        name: "Lowpass",
-        file: "lowpass.mjs",
-        description: "Filters out frequencies above specified value"
+        name: "peaking",
+        file: "peaking.mjs",
+        description: "Frequencies in range get attentuation"
     }
     return data;
 }
@@ -15,7 +15,7 @@ export function buildui(filterID, sampleRate, removeParentDiv) {
         container.className = filterID + "-container"
 
         var FilterName = document.createElement("h3")
-        FilterName.textContent = 'Low Pass'
+        FilterName.textContent = 'peaking'
         container.appendChild(FilterName)
 
         // Create frequency slider
@@ -53,6 +53,22 @@ export function buildui(filterID, sampleRate, removeParentDiv) {
         qSlider.value = 1;
         qcontainer.appendChild(qSlider)
 
+        var dbcontainer = document.createElement("div")
+        freqcontainer.className = "slider-container"
+
+        const dblabel = document.createElement('label');
+        dblabel.setAttribute('for', filterID+'db');  
+        dblabel.textContent = 'dB';
+        dbcontainer.appendChild(dblabel);
+
+        var dbSlider = document.createElement("input");
+        dbSlider.type = "range";
+        dbSlider.id = filterID + "db";
+        dbSlider.min = -50;
+        dbSlider.max = 50;
+        dbSlider.value = 0;
+        dbcontainer.appendChild(dbSlider);
+
 
         var remove = document.createElement("button")
         remove.id = "remove"
@@ -62,6 +78,7 @@ export function buildui(filterID, sampleRate, removeParentDiv) {
         // Append sliders to container
         container.appendChild(freqcontainer);
         container.appendChild(qcontainer);
+        container.appendChild(dbcontainer);
         container.appendChild(remove);
         filterContainer.appendChild(container);
         resolve();
@@ -72,20 +89,22 @@ export function getParam(filterID) {
 
     const frequency = document.getElementById(filterID + "freq").value
     const Q = document.getElementById(filterID + "Q").value
-    return [frequency, Q]
+    const db = document.getElementById(filterID + "db").value
+    return [frequency, Q,db]
 }
 
 export function buildFilter(ctx,filterID) {
     var filter = ctx.createBiquadFilter();
-    filter.type = 'lowpass'
-    const [freq, Qvalue] = getParam(filterID)
+    filter.type = 'peaking'
+    const [freq, Qvalue, db] = getParam(filterID)
     filter.frequency.value = freq
     filter.Q.value = Qvalue
     return filter
 }
 
 export function updateParam(filter, filterID){
-    var [freq, Qvalue] = getParam(filterID)
+    var [freq, Qvalue,db] = getParam(filterID)
     filter.Q.value = Qvalue
+    filter.gain.value = db
     filter.frequency.value = freq
 }

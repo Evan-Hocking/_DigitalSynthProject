@@ -19,6 +19,24 @@ availableFilters["lowpass"] = lowpass
 import * as highpass from "./filters/highpass.mjs"
 availableFilters["highpass"] = highpass
 
+import * as bandpass from "./filters/bandpass.mjs"
+availableFilters["bandpass"] = bandpass
+
+import * as lowshelf from "./filters/lowshelf.mjs"
+availableFilters["lowshelf"] = lowshelf
+
+import * as highshelf from "./filters/highshelf.mjs"
+availableFilters["highshelf"] = highshelf
+
+import * as peaking from "./filters/peaking.mjs"
+availableFilters["peaking"] = peaking
+
+import * as notch from "./filters/notch.mjs"
+availableFilters["notch"] = notch
+
+import * as allpass from "./filters/allpass.mjs"
+availableFilters["allpass"] = allpass
+
 
 const addFilter = document.getElementById('addFilter');
 addFilter.addEventListener('click', event => {
