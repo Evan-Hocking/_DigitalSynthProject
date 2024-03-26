@@ -66,7 +66,6 @@ export function buildui(filterID, sampleRate, removeParentDiv) {
 
 export function getParam(filterID) {
 
-    console.log(document.getElementById(filterID + "freq"))
     const frequency = document.getElementById(filterID + "freq").value
     const Q = document.getElementById(filterID + "Q").value
     return [frequency, Q]

@@ -5,7 +5,7 @@ let gainNode = ctx.createGain(); // Variable to store the gain node
 let activeSource = ctx.createOscillator();; // Variable to store the currently active source
 
 let activeFrequency = null;
-let activeFilters = { "gainNode": gainNode }
+let activeFilters = { "gainNode0": gainNode }
 const activeKeys = []
 
 let availableFilters = {}
@@ -70,10 +70,21 @@ function hideFilterListOnClickOutside(event) {
         hideFilterList();
     }
 }
+
+function getFilterNumber(){
+    const keys = Object.keys(activeFilters)
+    const lastKey = keys[keys.length-1];
+    const filterNumber = parseInt(lastKey.match(/\d+$/)[0],10) + 1
+    return filterNumber
+}
+
 function bldFilter(filterName) {
+    const filterNumber = getFilterNumber()
+    
+    const nodeID = filterName + filterNumber
     return new Promise((resolve, reject) => {
         // Build UI for the filter
-        availableFilters[filterName].buildui(filterName, sampleRate, removeParentDiv)
+        availableFilters[filterName].buildui(nodeID, sampleRate, removeParentDiv)
             .then(() => {
                 // Remove add-container after UI is built
                 const addContainer = document.querySelector('.add-container');
@@ -83,9 +94,9 @@ function bldFilter(filterName) {
                     reject('Add container not found');
                 }
                 // Build the filter
-                const filter = availableFilters[filterName].buildFilter(ctx, filterName);
+                const filter = availableFilters[filterName].buildFilter(ctx, nodeID);
                 // Store the filter in activeFilters
-                activeFilters[filterName] = filter;
+                activeFilters[nodeID] = filter;
                 // Resolve the promise
                 resolve();
                 buildAdd()
@@ -286,10 +297,11 @@ function releaseEnvelope(releaseTime) {
 
 //plays sound to selected frequency
 function playSound(frequency) {
-    const filterKeys = Object.keys(activeFilters);
+    const nodeKeys = Object.keys(activeFilters);
+    const filterKeys = nodeKeys.map(str => str.replace(/\d+$/, ''));
 
     for (let i = 1; i < filterKeys.length; i++) {
-        availableFilters[filterKeys[i]].updateParam(activeFilters[filterKeys[i]], filterKeys[i])
+        availableFilters[filterKeys[i]].updateParam(activeFilters[nodeKeys[i]], nodeKeys[i])
 
     }
     updateADS()
