@@ -7,7 +7,7 @@ export function init() {
     return data;
 }
 
-export function buildui(filterID, sampleRate, removeParentDiv) {
+export function buildui(filterID, sampleRate, removeParentDiv,updateFilterParams) {
     return new Promise((resolve, reject) => {
         var filterContainer = document.querySelector(".effects-container");
         var container = document.createElement("div");
@@ -45,7 +45,7 @@ export function buildFilter(ctx,filterID) {
     return filter
 }
 
-export function updateParam(filter, filterID){
+export function updateParam(filter, filterID,ctx){
     var [freq, Qvalue] = getParam(filterID)
     filter.Q.value = Qvalue
     filter.frequency.value = freq

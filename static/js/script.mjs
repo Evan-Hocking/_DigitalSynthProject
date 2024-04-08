@@ -2,7 +2,7 @@ const serverUrl = window.location.origin;
 const ctx = new (window.AudioContext || window.webkitAudioContext)();
 const sampleRate = ctx.sampleRate;
 let gainNode = ctx.createGain(); // Variable to store the gain node
-let activeSource = ctx.createOscillator();; // Variable to store the currently active source
+let activeSource = ctx.createOscillator(); // Variable to store the currently active source
 
 let activeFrequency = null;
 let activeFilters = { "gainNode0": gainNode }
@@ -36,6 +36,9 @@ availableFilters["notch"] = notch
 
 import * as allpass from "./filters/allpass.mjs"
 availableFilters["allpass"] = allpass
+
+import * as reverb from "./filters/reverb.mjs"
+availableFilters["reverb"] = reverb
 
 
 const addFilter = document.getElementById('addFilter');
@@ -102,7 +105,7 @@ function bldFilter(filterName) {
     const nodeID = filterName + filterNumber
     return new Promise((resolve, reject) => {
         // Build UI for the filter
-        availableFilters[filterName].buildui(nodeID, sampleRate, removeParentDiv)
+        availableFilters[filterName].buildui(nodeID, sampleRate, removeParentDiv,updateFilterParams)
             .then(() => {
                 // Remove add-container after UI is built
                 const addContainer = document.querySelector('.add-container');
@@ -310,25 +313,34 @@ function releaseEnvelope(releaseTime) {
     gainNode.gain.linearRampToValueAtTime(0, currentTime + releaseTime);
 
 }
-//converts the slider value 0-100 to decibel values
 
-
-//plays sound to selected frequency
-function playSound(frequency) {
+function updateFilterParams(){
     const nodeKeys = Object.keys(activeFilters);
     const filterKeys = nodeKeys.map(str => str.replace(/\d+$/, ''));
 
     for (let i = 1; i < filterKeys.length; i++) {
-        availableFilters[filterKeys[i]].updateParam(activeFilters[nodeKeys[i]], nodeKeys[i])
-
+        availableFilters[filterKeys[i]].updateParam(activeFilters[nodeKeys[i]], nodeKeys[i],ctx)
     }
+}
+
+
+
+//plays sound to selected frequency
+function playSound(frequency) {
+    
     updateADS()
 
 
     if (activeFrequency) {
         activeSource.frequency.setValueAtTime(frequency, ctx.currentTime);
     } else {
+        const nodeKeys = Object.keys(activeFilters);
+        const filterKeys = nodeKeys.map(str => str.replace(/\d+$/, ''));
 
+        for (let i = 1; i < filterKeys.length; i++) {
+            availableFilters[filterKeys[i]].updateParam(activeFilters[nodeKeys[i]], nodeKeys[i],ctx)
+
+        }
         // Create an oscillator node
         // const osc = ctx.createOscillator();
         // activeSource.type = document.getElementById("waveform").value
@@ -386,6 +398,4 @@ const waveformSelect = document.getElementById('waveform');
 waveformSelect.addEventListener('change', function (event) {
     const selectedWaveform = event.target.value;
     activeSource.type = selectedWaveform
-    // You can perform actions based on the selected waveform here,
-    // such as changing the waveform of an oscillator.
 });

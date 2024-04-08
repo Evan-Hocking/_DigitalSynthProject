@@ -7,7 +7,7 @@ export function init() {
     return data;
 }
 
-export function buildui(filterID, sampleRate, removeParentDiv) {
+export function buildui(filterID, sampleRate, removeParentDiv,updateFilterParams) {
     return new Promise((resolve, reject) => {
         var filterContainer = document.querySelector(".effects-container");
 
@@ -33,6 +33,7 @@ export function buildui(filterID, sampleRate, removeParentDiv) {
         freqSlider.min = 20;
         freqSlider.max = sampleRate / 8;
         freqSlider.value = sampleRate / 32;
+        freqSlider.addEventListener('change', updateFilterParams);
         freqcontainer.appendChild(freqSlider);
 
 
@@ -51,6 +52,7 @@ export function buildui(filterID, sampleRate, removeParentDiv) {
         qSlider.min = 0.1;
         qSlider.max = 10;
         qSlider.value = 1;
+        qSlider.addEventListener('change', updateFilterParams);
         qcontainer.appendChild(qSlider)
 
         var dbcontainer = document.createElement("div")
@@ -67,6 +69,7 @@ export function buildui(filterID, sampleRate, removeParentDiv) {
         dbSlider.min = -50;
         dbSlider.max = 50;
         dbSlider.value = 0;
+        dbSlider.addEventListener('change', updateFilterParams);
         dbcontainer.appendChild(dbSlider);
 
 
@@ -102,7 +105,7 @@ export function buildFilter(ctx,filterID) {
     return filter
 }
 
-export function updateParam(filter, filterID){
+export function updateParam(filter, filterID, ctx){
     var [freq, Qvalue,db] = getParam(filterID)
     filter.Q.value = Qvalue
     filter.gain.value = db
