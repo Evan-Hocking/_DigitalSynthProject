@@ -17,6 +17,10 @@ export function buildui(filterID, sampleRate, removeParentDiv,updateFilterParams
         FilterName.textContent = "Pan"
         container.appendChild(FilterName)
 
+        var desc = document.createElement("p")
+        desc.textContent = 'Adjusts stereo field'
+        container.appendChild(desc)
+
         var pancontainer = document.createElement("div")
         pancontainer.className = "slider-container"
 

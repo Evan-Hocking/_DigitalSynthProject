@@ -17,6 +17,10 @@ export function buildui(filterID, sampleRate, removeParentDiv,updateFilterParams
         FilterName.textContent = "Reverb"
         container.appendChild(FilterName)
 
+        var desc = document.createElement("p")
+        desc.textContent = 'Simulates acoustic reflections'
+        container.appendChild(desc)
+
         var durcontainer = document.createElement("div")
         durcontainer.className = "slider-container"
 

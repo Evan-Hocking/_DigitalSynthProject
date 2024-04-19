@@ -18,6 +18,10 @@ export function buildui(filterID, sampleRate, removeParentDiv,updateFilterParams
         FilterName.textContent = 'Peaking'
         container.appendChild(FilterName)
 
+        var desc = document.createElement("p")
+        desc.textContent = 'Boosts frequency range'
+        container.appendChild(desc)
+
         // Create frequency slider
         var freqcontainer = document.createElement("div")
         freqcontainer.className = "slider-container"
@@ -56,7 +60,7 @@ export function buildui(filterID, sampleRate, removeParentDiv,updateFilterParams
         qcontainer.appendChild(qSlider)
 
         var dbcontainer = document.createElement("div")
-        freqcontainer.className = "slider-container"
+        dbcontainer.className = "slider-container"
 
         const dblabel = document.createElement('label');
         dblabel.setAttribute('for', filterID+'db');  

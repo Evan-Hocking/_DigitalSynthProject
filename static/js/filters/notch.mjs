@@ -18,6 +18,10 @@ export function buildui(filterID, sampleRate, removeParentDiv,updateFilterParams
         FilterName.textContent = 'Notch'
         container.appendChild(FilterName)
 
+        var desc = document.createElement("p")
+        desc.textContent = 'Removes frequency band'
+        container.appendChild(desc)
+
         // Create frequency slider
         var freqcontainer = document.createElement("div")
         freqcontainer.className = "slider-container"

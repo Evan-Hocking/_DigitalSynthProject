@@ -314,7 +314,7 @@ function updateFilterParams(){
 // #region noteEvent
 function noteUp(note, isSharp) {
     const elem = document.querySelector(`[data-note="${note}"]`);
-    elem.style.background = isSharp ? '#777' : 'white';
+    elem.style.background = isSharp ? '#292929' : 'white';
     const releaseTime = getRelease(); // in seconds
     if (activeKeys[0]) {
         noteDown(util.keyNoteMapping[activeKeys[activeKeys.length - 1]],)

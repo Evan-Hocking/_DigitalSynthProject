@@ -17,6 +17,10 @@ export function buildui(filterID, sampleRate, removeParentDiv,updateFilterParams
         FilterName.textContent = 'High Shelf'
         container.appendChild(FilterName)
 
+        var desc = document.createElement("p")
+        desc.textContent = 'Boosts high frequencies'
+        container.appendChild(desc)
+
         var freqcontainer = document.createElement("div")
         freqcontainer.className = "slider-container"
 
@@ -35,7 +39,7 @@ export function buildui(filterID, sampleRate, removeParentDiv,updateFilterParams
         freqcontainer.appendChild(freqSlider);
 
         var dbcontainer = document.createElement("div")
-        freqcontainer.className = "slider-container"
+        dbcontainer.className = "slider-container"
 
         const dblabel = document.createElement('label');
         dblabel.setAttribute('for', filterID+'db');  

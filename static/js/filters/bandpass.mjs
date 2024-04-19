@@ -18,6 +18,10 @@ export function buildui(filterID, sampleRate, removeParentDiv,updateFilterParams
         FilterName.textContent = 'Band Pass'
         container.appendChild(FilterName)
 
+        var desc = document.createElement("p")
+        desc.textContent = 'Allows frequency range'
+        container.appendChild(desc)
+
         // Create frequency slider
         var freqcontainer = document.createElement("div")
         freqcontainer.className = "slider-container"
