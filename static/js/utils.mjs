@@ -56,11 +56,8 @@ export function noteToMIDI(noteName) {
 }
 
 export function getdB() {
-    // Get the roundSlider instance
-    var roundSlider = $("#volume-slider").data("roundSlider");
+    var sliderValue = document.getElementById("volume-slider").value
 
-    // Access the current value
-    var sliderValue = roundSlider.getValue();
     var dbvolume = 37 * (sliderValue / 100) - 40;
 
     return dbvolume;

@@ -19,14 +19,11 @@ function buildKeys() {
             }
             //generates white note
             html += `<div class='whitenote'
-            onmousedown='noteDown(this.dataset.note,false)'
-            onmouseup='noteUp(this.dataset.note,false)'
-            data-note='${note + (octave + 4)}' id = '${note + '#' + (octave + 4)}'>`;
+            data-note='${note + (octave + 4)}' id = '${note + (octave + 4)}'>`;
             //generates black note
             if (hasSharp) {
                 html += `<div class='blacknote'
-            onmousedown='noteDown(this.dataset.note,true)'
-            onmouseup='noteUp(this.dataset.note,true)'
+
             data-note='${note + '#' + (octave + 4)}' id = '${note + '#' + (octave + 4)}'></div>`;
             }
             html += '</div>';
@@ -34,6 +31,7 @@ function buildKeys() {
     }
 
     document.getElementById('container').innerHTML = html;
+
     
 
 }

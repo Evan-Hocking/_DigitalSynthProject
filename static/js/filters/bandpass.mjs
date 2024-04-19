@@ -43,7 +43,7 @@ export function buildui(filterID, sampleRate, removeParentDiv,updateFilterParams
 
         const qlabel = document.createElement('label');
         qlabel.setAttribute('for', filterID+'Q');  
-        qlabel.textContent = 'width';
+        qlabel.textContent = 'Width';
         qcontainer.appendChild(qlabel);
 
         var qSlider = document.createElement("input");

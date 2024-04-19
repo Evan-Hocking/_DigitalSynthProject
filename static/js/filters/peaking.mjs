@@ -15,7 +15,7 @@ export function buildui(filterID, sampleRate, removeParentDiv,updateFilterParams
         container.className = filterID + "-container"
 
         var FilterName = document.createElement("h3")
-        FilterName.textContent = 'peaking'
+        FilterName.textContent = 'Peaking'
         container.appendChild(FilterName)
 
         // Create frequency slider
@@ -43,7 +43,7 @@ export function buildui(filterID, sampleRate, removeParentDiv,updateFilterParams
 
         const qlabel = document.createElement('label');
         qlabel.setAttribute('for', filterID+'Q');  
-        qlabel.textContent = 'Resonance';
+        qlabel.textContent = 'Width';
         qcontainer.appendChild(qlabel);
 
         var qSlider = document.createElement("input");

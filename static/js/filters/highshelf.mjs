@@ -14,7 +14,7 @@ export function buildui(filterID, sampleRate, removeParentDiv,updateFilterParams
         container.className = filterID + "-container"
 
         var FilterName = document.createElement("h3")
-        FilterName.textContent = 'highshelf'
+        FilterName.textContent = 'High Shelf'
         container.appendChild(FilterName)
 
         var freqcontainer = document.createElement("div")

@@ -10,6 +10,7 @@ const activeKeys = []
 
 let availableFilters = {}
 
+// #region Imports
 import * as util from "./utils.mjs"
 import * as vis from "./visualiser.mjs"
 
@@ -40,7 +41,13 @@ availableFilters["allpass"] = allpass
 import * as reverb from "./filters/reverb.mjs"
 availableFilters["reverb"] = reverb
 
+import * as pan from "./filters/pan.mjs"
+availableFilters["pan"] = pan
 
+// #endregion
+
+
+// #region FilterHandling
 const addFilter = document.getElementById('addFilter');
 addFilter.addEventListener('click', event => {
     event.stopPropagation(); // Prevent the document click listener from immediately hiding the list
@@ -103,6 +110,13 @@ function bldFilter(filterName) {
     const filterNumber = getFilterNumber()
     
     const nodeID = filterName + filterNumber
+    let currentURL = new URL(window.location.href);
+
+    // Set the nodeID parameter
+    currentURL.searchParams.append('nodeID', nodeID);
+
+    // Update the URL without reloading the page
+    window.history.pushState({ path: currentURL.href }, '', currentURL.href);
     return new Promise((resolve, reject) => {
         // Build UI for the filter
         availableFilters[filterName].buildui(nodeID, sampleRate, removeParentDiv,updateFilterParams)
@@ -130,10 +144,27 @@ function bldFilter(filterName) {
 
 }
 
+function removeFromURL(nodeID){
+    let currentURL = new URL(window.location.href);
+    // Get all values for the parameter 'nodeID'
+    let nodeIDValues = currentURL.searchParams.getAll('nodeID');
+    let updatedNodeIDValues = nodeIDValues.filter(value => value !== nodeID);
+
+    // Update the URL without reloading the page
+    currentURL.searchParams.delete('nodeID');
+    updatedNodeIDValues.forEach(value => currentURL.searchParams.append('nodeID', value));
+
+    // Update the URL without reloading the page
+    window.history.pushState({ path: currentURL.href }, '', currentURL.href)
+}
+
+
 function removeParentDiv(event) {
-    // Get the parent div of the button
     const parentDiv = event.target.parentElement;
     const FilterID = parentDiv.className.replace("-container", "");
+    removeFromURL(FilterID)
+    
+    
     activeFilters[FilterID].disconnect
     delete activeFilters[FilterID]
 
@@ -162,23 +193,7 @@ function buildAdd() {
     container.appendChild(addContainer)
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+// #endregion
 
 
 const analyser = ctx.createAnalyser();
@@ -190,8 +205,10 @@ document.addEventListener("DOMContentLoaded", function () {
     c = vis.buildCanvas()
 });
 
+window.addEventListener('resize', () => c=vis.buildCanvas());
 
 
+// #region keyEventListeners
 //Event listener for the keydown event
 document.addEventListener('keydown', function (event) {
     //prevents default tab behaviour since it is used for keyboard input
@@ -237,45 +254,15 @@ document.addEventListener('keyup', function (event) {
     // }
 });
 
+// #endregion
+
 //applies formula to convert midi to the equivalent frequency value
 function getFrequency(midiValue) {
     return Math.pow(2, (midiValue - 69) / 12) * 440;
 }
 
-//converts note name to its equivalent midi value
 
-
-
-//resets note colours to original and stops calls to stop sound
-function noteUp(note, isSharp) {
-    const elem = document.querySelector(`[data-note="${note}"]`);
-    elem.style.background = isSharp ? '#777' : 'white';
-    const releaseTime = getRelease(); // in seconds
-    if (activeKeys[0]) {
-        noteDown(util.keyNoteMapping[activeKeys[activeKeys.length - 1]],)
-    } else {
-        releaseEnvelope(releaseTime)
-    }
-
-}
-
-//controls behaviour for when a note is pressed
-function noteDown(note, isSharp) {
-
-    const elem = document.querySelector(`[data-note="${note}"]`);
-    if (elem) {
-        event.stopPropagation();
-        elem.style.background = isSharp ? 'black' : '#ccc';
-        var frequency = getFrequency(util.noteToMIDI(note))
-
-
-        // Play the sound with the current gain
-        playSound(frequency);
-    }
-}
-
-
-
+// #region ADSREnvelope
 function getADS() {
     var attack = document.getElementById("attack").value / 100
     var decay = document.getElementById("decay").value / 100
@@ -322,8 +309,35 @@ function updateFilterParams(){
         availableFilters[filterKeys[i]].updateParam(activeFilters[nodeKeys[i]], nodeKeys[i],ctx)
     }
 }
+// #endregion
+
+// #region noteEvent
+function noteUp(note, isSharp) {
+    const elem = document.querySelector(`[data-note="${note}"]`);
+    elem.style.background = isSharp ? '#777' : 'white';
+    const releaseTime = getRelease(); // in seconds
+    if (activeKeys[0]) {
+        noteDown(util.keyNoteMapping[activeKeys[activeKeys.length - 1]],)
+    } else {
+        releaseEnvelope(releaseTime)
+    }
+
+}
+
+//controls behaviour for when a note is pressed
+function noteDown(note, isSharp) {
+
+    const elem = document.querySelector(`[data-note="${note}"]`);
+    if (elem) {
+        event.stopPropagation();
+        elem.style.background = isSharp ? 'black' : '#ccc';
+        var frequency = getFrequency(util.noteToMIDI(note))
 
 
+        // Play the sound with the current gain
+        playSound(frequency);
+    }
+}
 
 //plays sound to selected frequency
 function playSound(frequency) {
@@ -359,6 +373,8 @@ function playSound(frequency) {
     activeFrequency = frequency;
 
 }
+
+// #endregion
 
 function buildSignalChain() {
     const filterKeys = Object.keys(activeFilters);
@@ -398,4 +414,104 @@ const waveformSelect = document.getElementById('waveform');
 waveformSelect.addEventListener('change', function (event) {
     const selectedWaveform = event.target.value;
     activeSource.type = selectedWaveform
+    let currentURL = new URL(window.location.href);
+
+    // Set the nodeID parameter
+    currentURL.searchParams.set('waveform', selectedWaveform);
+
+    // Update the URL without reloading the page
+    window.history.pushState({ path: currentURL.href }, '', currentURL.href);
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    let currentURL = new URL(window.location.href);
+    let params = new URLSearchParams(currentURL.search);
+    let paramValues = params.getAll('nodeID');
+
+    paramValues.forEach((value, index) => {
+        // Remove trailing numbers using regular expression
+        removeFromURL(paramValues[index])
+        paramValues[index] = value.replace(/\d+$/, ''); // Replace trailing digits with empty string
+        bldFilter(paramValues[index])
+    });
+    var waveform = params.get('waveform');
+    if (waveform){
+        activeSource.type = waveform
+        document.getElementById("waveform").value=waveform
+    }
+    var octave = params.get('octave')
+    if(octave){
+        activeSource.detune.value = octave*1200
+        document.getElementById('octave-display').innerHTML = octave
+    }
+    
+});
+
+let btnSaveConfig = document.getElementById('btn-save-config');
+btnSaveConfig.addEventListener('click', function() {
+    let currentURL = new URL(window.location.href);
+    let textarea = document.createElement('textarea');
+    textarea.value = currentURL
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textarea);
+    alert("Copied to Clipboard")
+    
+});
+
+let decreaseOctaveButton = document.getElementById('decreaseOctaveButton');
+decreaseOctaveButton.addEventListener('click', function() {
+   var detune = activeSource.detune.value
+
+   if (detune >= -2400){
+    detune -= 1200
+    activeSource.detune.value = detune
+    document.getElementById('octave-display').innerHTML = detune/1200
+    let currentURL = new URL(window.location.href);
+
+    // Set the nodeID parameter
+    currentURL.searchParams.set('octave', detune/1200);
+
+    // Update the URL without reloading the page
+    window.history.pushState({ path: currentURL.href }, '', currentURL.href);
+   }
+});
+
+let increaseOctaveButton = document.getElementById('increaseOctaveButton');
+increaseOctaveButton.addEventListener('click', function() {
+    var detune = activeSource.detune.value
+    if (detune <= 2400){
+     detune += 1200
+     activeSource.detune.value = detune
+     document.getElementById('octave-display').innerHTML = detune/1200
+     let currentURL = new URL(window.location.href);
+
+    // Set the nodeID parameter
+    currentURL.searchParams.set('octave', detune/1200);
+
+    // Update the URL without reloading the page
+    window.history.pushState({ path: currentURL.href }, '', currentURL.href);
+    }
+});
+
+
+var container = document.getElementById('container');
+
+// Add event listener to the container for mousedown event
+container.addEventListener('mousedown', function(event) {
+    // Check if the event target has the class 'whitenote' or 'blacknote'
+    if (event.target.classList.contains('whitenote') || event.target.classList.contains('blacknote')) {
+        // Call the noteDown function passing the dataset.note value and whether it's a black note or not
+        noteDown(event.target.dataset.note, event.target.classList.contains('blacknote'));
+    }
+});
+
+// Add event listener to the container for mouseup event
+container.addEventListener('mouseup', function(event) {
+    // Check if the event target has the class 'whitenote' or 'blacknote'
+    if (event.target.classList.contains('whitenote') || event.target.classList.contains('blacknote')) {
+        // Call the noteUp function passing the dataset.note value and whether it's a black note or not
+        noteUp(event.target.dataset.note, event.target.classList.contains('blacknote'));
+    }
 });

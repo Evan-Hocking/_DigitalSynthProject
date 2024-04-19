@@ -1,3 +1,11 @@
+#keys {
+    position: relative; /* Change from absolute to relative positioning */
+    max-width: 710px;
+    margin-top: 20px; /* Add margin-top to create space between containers */
+}
+
+
+
 #container {
     position: absolute;
     height: 200px;
@@ -21,6 +29,14 @@
     z-index: 1;
     background: #777;
     left: 68%;
+}
+
+#controls {
+    position: absolute;
+    bottom: 0;
+    display: flex; /* Use flexbox layout */
+    justify-content: space-between; /* Distribute buttons evenly */
+    width: 100%;
 }
 
 .rs-overlay.rs-transition.rs-bg-color {
@@ -51,6 +67,8 @@
     width: 100%; /* Adjust as needed */
     overflow-x: auto; /* or overflow-x: scroll; */
     white-space: nowrap; /* Prevent content from wrapping */
+    min-height: 200px;
+    margin-bottom: 30px;
 }
 .adsr-container{
     margin-left: 48px;
@@ -65,8 +83,42 @@
     position: absolute;
     bottom: 0;
     background-color: #181818;
+    margin-left: 5px;
+
   }
 
   #filtersList {
+    background-color: #eaeaea;
+  }
+  #filtersList li:hover{
     background-color: #777;
   }
+
+  #btn-save-config{
+    position: fixed;
+    top: 0;
+    right: 0;
+    margin: 20px; /* Optional margin for better spacing */
+  }
+
+  #filtersList {
+    max-height: 140px; /* Adjust as needed */
+    overflow-y: auto;
+    overflow-x: hidden;
+    text-align: center;
+}
+
+#filtersList ul {
+    list-style-type: none;
+    margin: 0;
+    padding:5px;
+}
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+#keys{
+    margin-top: 20px;
+}
