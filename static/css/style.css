@@ -1,8 +1,18 @@
+#keys {
+    position: relative;
+    /* Change from absolute to relative positioning */
+    max-width: 721px;
+    margin-top: 20px;
+    /* Add margin-top to create space between containers */
+}
+
+
+
 #container {
     position: absolute;
     height: 200px;
-    border: 5px solid black;
     overflow: hidden;
+    border-radius: 10px;
 }
 
 .whitenote {
@@ -19,47 +29,214 @@
     height: 65%;
     width: 55%;
     z-index: 1;
-    background: #777;
+    background: #292929;
     left: 68%;
+}
+
+#controls {
+    position: absolute;
+    bottom: 0;
+    display: flex;
+    /* Use flexbox layout */
+    justify-content: space-between;
+    /* Distribute buttons evenly */
+    width: 100%;
+    margin:5px;
 }
 
 .rs-overlay.rs-transition.rs-bg-color {
     background-color: transparent;
-  }
+}
 
-.slider .rs-border  {
+.slider .rs-border {
     border-width: 2px;
 }
-.slider .rs-handle  {
+
+.slider .rs-handle {
     background: black;
     margin-left: 0 !important;
 }
-.vol-text{
+
+.vol-text {
 
     text-align: center;
 }
-.Volume{
-    max-width: 100px;
-    margin-right: 48px;
-    margin: left 48px;
-}
 
- 
-.effects-container{
+
+
+.effects-container {
     display: flex;
     align-items: center;
+    width: 100%;
+    /* Adjust as needed */
+    overflow-x: auto;
+    /* or overflow-x: scroll; */
+    white-space: nowrap;
+    /* Prevent content from wrapping */
+    min-height: 200px;
+    margin-bottom: 30px;
 }
-.adsr-container{
+
+.adsr-container {
     margin-left: 48px;
 }
 
-.slider-container{
+.slider-container {
     display: list-item;
     list-style-type: none;
+    text-align: right;
 }
+
+/* .slider-container input[type="range" i]{
+    justify-content: flex-end;
+} */
 
 #canvas {
     position: absolute;
     bottom: 0;
-    background-color: #181818;
-  }
+    background-color: #262626;
+
+    border-radius: 10px;
+}
+
+#filtersList {
+    background-color: #262626;
+    transition: background-color 0.1s ease;
+    border-radius: 3px;
+    margin: 1px;
+}
+
+#filtersList li:hover {
+    background-color: #373737;
+}
+
+#filtersList li:active{
+    background-color: #474747;
+}
+#btn-save-config {
+    position: fixed;
+    top: 0;
+    right: 0;
+    margin: 20px;
+    /* Optional margin for better spacing */
+}
+
+#filtersList {
+    max-height: 140px;
+    /* Adjust as needed */
+    overflow-y: auto;
+    overflow-x: hidden;
+    text-align: center;
+}
+
+#filtersList ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 5px;
+}
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+#keys {
+    margin-top: 20px;
+}
+
+
+.effects-container h3 {
+    text-align: center;
+}
+
+.effects-container p {
+    text-align: center;
+}
+
+.effects-container div {
+    padding: 5px;
+    margin: 5px;
+    border-radius: 10px;
+    height: 80%;
+    background-color: #262626;
+}
+
+.effects-container div div {
+    padding: 0px;
+    margin: 0px;
+    outline: none;
+    height: auto;
+    justify-content: end;
+}
+
+.adsr-container p {
+    max-width: 150px;
+    word-wrap: break-word;
+}
+
+.add-container {
+    outline: none;
+
+}
+
+#addFilter {
+    padding: 10px;
+    width: 40px;
+    height: 40px;
+    font-size: large;
+}
+
+#gain-slider {
+    text-align: center;
+}
+
+html {
+    background-color: #121212;
+    color: #E3E3E3;
+    font-family: "Roboto", sans-serif;
+    font-weight: 500;
+    font-style: normal;
+}
+
+button {
+    background-color: #292929;
+    border-radius: 5px;
+    color: #E3E3E3;
+    border: none;
+    transition: background-color 0.1s ease;
+}
+
+button:hover {
+    background-color: #373737;
+}
+
+button:active {
+    background-color: #474747;
+}
+
+#btn-save-config{
+    padding:10px;
+}
+
+
+::-webkit-scrollbar-track {
+    background-color: #262626; /* Change to your desired color */
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #e3e3e3; /* Change to your desired color */
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 5px; /* Round the corners */
+}
+
+#remove{
+    padding: 5px;
+    margin-top: 5px;
+}
+
+
+#sample-rate-container{
+    display: none;
+}

@@ -3,62 +3,116 @@
 
 <head>
     <link rel="stylesheet" type="text/css" href="static/css/style.css" />
-    <title>Modular Synthesiser</title>
+    <title>Open Synth</title>
     <link rel="icon" type="image/x-icon" href="static/image/icons/keybord_keys_piano_icon_123891.ico">
-    <script src="static/js/init.js"></script>
+    <script src="static/js/init.mjs"></script>
 
     <script src="https://code.jquery.com/jquery-3.2.1.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/round-slider@1.6.1/dist/roundslider.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/round-slider@1.6.1/dist/roundslider.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap" rel="stylesheet">
 </head>
 
 <body>
-    <label for="waveform">Select a Waveform: </label>
+    <h1>Open Synth</h1>
+    <div class="wrapper">
+        <div class="effects-container">
+            <div class="inputDevice">
 
-    <select name="waveform" id="waveform">
-        <option value="sine">Sine</option>
-        <option value="square">Square</option>
-        <option value="sawtooth">Sawtooth</option>
-        <option value="triangle">Triangle</option>
-    </select>
-    <div class="effects-container">
-        <div class="Volume">
-            <p class="vol-text">Gain:</p>
-            <div class="slider" id="volume-slider"></div>
+                <h3>Input Device</h3>
+                <div class="slider-container">
+                    <label for="inputSource">Select Device: </label>
+
+                    <select name="inputSource" id="inputSource">
+                        <option value="keys">Keyboard</option>
+                        <option value="mic">Microphone</option>
+                    </select>
+                </div>
+                <div class="slider-container"  id="waveform-container">
+                    <label for="waveform">Waveform: </label>
+
+                    <select name="waveform" id="waveform">
+                        <option value="sine">Sine</option>
+                        <option value="square">Square</option>
+                        <option value="sawtooth">Sawtooth</option>
+                        <option value="triangle">Triangle</option>
+                    </select>
+                </div>
+                <div class="slider-container"  id="sample-rate-container">
+                    <label for="sampleRate">Sample Rate: </label>
+
+                    <select name="sampleRate" id="sampleRate">
+                        <option value=44100>44100</option>
+                        <option value=48000>48000</option>
+                        <option value=88200>88200</option>
+                        <option value=96000>96000</option>
+                        <option value=176400>176400</option>
+                        <option value=192000>192000</option>
+                    </select>
+                </div>
+            </div>
+            <div class="Volume">
+                <!-- <p class="vol-text">Gain:</p>
+            <div class="slider" id="volume-slider"></div> -->
+                <div class="slider-container" id="gain-slider">
+                    <!-- <label for="volume-slider">Gain</label> -->
+                    <h3>Gain</h3>
+                    <p>Set Oscillator Amplitude</p>
+                    <input type="range" id="volume-slider" min="1" max="100" value="50">
+
+                </div>
+            </div>
+            <div class="adsr-container">
+                <h3>ADSR Envelope</h3>
+                <p>Amplitude over time</p>
+                <div class="slider-container">
+                    <label for="attack">A</label>
+                    <input type="range" id="attack" min="1" max="100" value="20">
+
+                </div>
+                <div class="slider-container">
+                    <label for="decay">D</label>
+                    <input type="range" id="decay" min="1" max="100" value="20">
+
+                </div>
+                <div class="slider-container">
+                    <label for="decay">S</label>
+                    <input type="range" id="sustain" min="1" max="100" value="20">
+
+                </div>
+                <div class="slider-container">
+                    <label for="release">R</label>
+                    <input type="range" id="release" min="1" max="100" value="20">
+
+                </div>
+            </div>
+            <div class="add-container">
+                <button title="Add Filter Module" id="addFilter">+</button>
+            </div>
         </div>
-        <div class="adsr-container">
-            <div class="slider-container">
-                <label for="attack">A</label>
-                <input type="range" id="attack" min="1" max="100" value="20">
-
+        <div>
+            <button id="btn-save-config">Save Signal Chain</button>
+        </div>
+        <div id="keys">
+            <div id="controls">
+                <button id="decreaseOctaveButton">&lt;&lt; Octave &lt;&lt;</button>
+                <p id="octave-display">0</p>
+                <button id="increaseOctaveButton">&gt;&gt; Octave &gt;&gt;</button>
             </div>
-            <div class="slider-container">
-                <label for="decay">D</label>
-                <input type="range" id="decay" min="1" max="100" value="20">
-
+            <div id='container'>
             </div>
-            <div class="slider-container">
-                <label for="decay">S</label>
-                <input type="range" id="sustain" min="1" max="100" value="20">
 
-            </div>
-            <div class="slider-container">
-                <label for="release">R</label>
-                <input type="range" id="release" min="1" max="100" value="20">
-
-            </div>
         </div>
     </div>
-    <div id='container'>
-    </div>
-    <div>
     <canvas id="canvas"></canvas>
-</div>
+
     <script>
         init()
     </script>
 
-    <script src="static/js/script.js"></script>
+    <script type="module" src="static/js/script.mjs"></script>
 </body>
 
 </html>
