@@ -77,3 +77,16 @@ export function DbToAmpl(dB,serverUrl) {
 
     return amplitude
 }
+
+export function capitalizeWords(str) {
+    // Split the string into words
+    const words = str.split(" ");
+    
+    // Capitalize the first letter of each word
+    const capitalizedWords = words.map(word => {
+        return word.charAt(0).toUpperCase() + word.slice(1);
+    });
+    
+    // Join the capitalized words back into a string
+    return capitalizedWords.join(" ");
+}

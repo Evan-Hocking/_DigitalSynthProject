@@ -60,7 +60,7 @@ function createFilterList() {
 
     filterNames.forEach(filterName => {
         const listItem = document.createElement('li');
-        listItem.textContent = filterName;
+        listItem.textContent = util.capitalizeWords(filterName);
         listItem.addEventListener('click', () => {
             bldFilter(filterName);
             hideFilterList();
@@ -99,16 +99,16 @@ function hideFilterListOnClickOutside(event) {
     }
 }
 
-function getFilterNumber(){
+function getFilterNumber() {
     const keys = Object.keys(activeFilters)
-    const lastKey = keys[keys.length-1];
-    const filterNumber = parseInt(lastKey.match(/\d+$/)[0],10) + 1
+    const lastKey = keys[keys.length - 1];
+    const filterNumber = parseInt(lastKey.match(/\d+$/)[0], 10) + 1
     return filterNumber
 }
 
 function bldFilter(filterName) {
     const filterNumber = getFilterNumber()
-    
+
     const nodeID = filterName + filterNumber
     let currentURL = new URL(window.location.href);
 
@@ -119,7 +119,7 @@ function bldFilter(filterName) {
     window.history.pushState({ path: currentURL.href }, '', currentURL.href);
     return new Promise((resolve, reject) => {
         // Build UI for the filter
-        availableFilters[filterName].buildui(nodeID, sampleRate, removeParentDiv,updateFilterParams)
+        availableFilters[filterName].buildui(nodeID, sampleRate, removeParentDiv, updateFilterParams)
             .then(() => {
                 // Remove add-container after UI is built
                 const addContainer = document.querySelector('.add-container');
@@ -144,7 +144,7 @@ function bldFilter(filterName) {
 
 }
 
-function removeFromURL(nodeID){
+function removeFromURL(nodeID) {
     let currentURL = new URL(window.location.href);
     // Get all values for the parameter 'nodeID'
     let nodeIDValues = currentURL.searchParams.getAll('nodeID');
@@ -163,8 +163,8 @@ function removeParentDiv(event) {
     const parentDiv = event.target.parentElement;
     const FilterID = parentDiv.className.replace("-container", "");
     removeFromURL(FilterID)
-    
-    
+
+
     activeFilters[FilterID].disconnect
     delete activeFilters[FilterID]
 
@@ -205,7 +205,7 @@ document.addEventListener("DOMContentLoaded", function () {
     c = vis.buildCanvas()
 });
 
-window.addEventListener('resize', () => c=vis.buildCanvas());
+window.addEventListener('resize', () => c = vis.buildCanvas());
 
 
 // #region keyEventListeners
@@ -275,7 +275,7 @@ function getRelease() {
     return document.getElementById("release").value / 100
 }
 function updateADS() {
-    const amplitude = util.DbToAmpl(util.getdB(),serverUrl)
+    const amplitude = util.DbToAmpl(util.getdB(), serverUrl)
     const [attack, decay, sustain] = getADS()
 
     const currentTime = ctx.currentTime;
@@ -301,12 +301,12 @@ function releaseEnvelope(releaseTime) {
 
 }
 
-function updateFilterParams(){
+function updateFilterParams() {
     const nodeKeys = Object.keys(activeFilters);
     const filterKeys = nodeKeys.map(str => str.replace(/\d+$/, ''));
 
     for (let i = 1; i < filterKeys.length; i++) {
-        availableFilters[filterKeys[i]].updateParam(activeFilters[nodeKeys[i]], nodeKeys[i],ctx)
+        availableFilters[filterKeys[i]].updateParam(activeFilters[nodeKeys[i]], nodeKeys[i], ctx)
     }
 }
 // #endregion
@@ -341,7 +341,7 @@ function noteDown(note, isSharp) {
 
 //plays sound to selected frequency
 function playSound(frequency) {
-    
+
     updateADS()
 
 
@@ -352,7 +352,7 @@ function playSound(frequency) {
         const filterKeys = nodeKeys.map(str => str.replace(/\d+$/, ''));
 
         for (let i = 1; i < filterKeys.length; i++) {
-            availableFilters[filterKeys[i]].updateParam(activeFilters[nodeKeys[i]], nodeKeys[i],ctx)
+            availableFilters[filterKeys[i]].updateParam(activeFilters[nodeKeys[i]], nodeKeys[i], ctx)
 
         }
         // Create an oscillator node
@@ -364,7 +364,7 @@ function playSound(frequency) {
         buildSignalChain()
 
         activeSource.start();
-        vis.draw(analyser,dataArray,c);
+        vis.draw(analyser, dataArray, c);
 
 
         // Store the active source
@@ -423,7 +423,7 @@ waveformSelect.addEventListener('change', function (event) {
     window.history.pushState({ path: currentURL.href }, '', currentURL.href);
 });
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     let currentURL = new URL(window.location.href);
     let params = new URLSearchParams(currentURL.search);
     let paramValues = params.getAll('nodeID');
@@ -435,20 +435,20 @@ document.addEventListener('DOMContentLoaded', function() {
         bldFilter(paramValues[index])
     });
     var waveform = params.get('waveform');
-    if (waveform){
+    if (waveform) {
         activeSource.type = waveform
-        document.getElementById("waveform").value=waveform
+        document.getElementById("waveform").value = waveform
     }
     var octave = params.get('octave')
-    if(octave){
-        activeSource.detune.value = octave*1200
+    if (octave) {
+        activeSource.detune.value = octave * 1200
         document.getElementById('octave-display').innerHTML = octave
     }
-    
+
 });
 
 let btnSaveConfig = document.getElementById('btn-save-config');
-btnSaveConfig.addEventListener('click', function() {
+btnSaveConfig.addEventListener('click', function () {
     let currentURL = new URL(window.location.href);
     let textarea = document.createElement('textarea');
     textarea.value = currentURL
@@ -457,41 +457,41 @@ btnSaveConfig.addEventListener('click', function() {
     document.execCommand('copy');
     document.body.removeChild(textarea);
     alert("Copied to Clipboard")
-    
+
 });
 
 let decreaseOctaveButton = document.getElementById('decreaseOctaveButton');
-decreaseOctaveButton.addEventListener('click', function() {
-   var detune = activeSource.detune.value
+decreaseOctaveButton.addEventListener('click', function () {
+    var detune = activeSource.detune.value
 
-   if (detune >= -2400){
-    detune -= 1200
-    activeSource.detune.value = detune
-    document.getElementById('octave-display').innerHTML = detune/1200
-    let currentURL = new URL(window.location.href);
+    if (detune >= -2400) {
+        detune -= 1200
+        activeSource.detune.value = detune
+        document.getElementById('octave-display').innerHTML = detune / 1200
+        let currentURL = new URL(window.location.href);
 
-    // Set the nodeID parameter
-    currentURL.searchParams.set('octave', detune/1200);
+        // Set the nodeID parameter
+        currentURL.searchParams.set('octave', detune / 1200);
 
-    // Update the URL without reloading the page
-    window.history.pushState({ path: currentURL.href }, '', currentURL.href);
-   }
+        // Update the URL without reloading the page
+        window.history.pushState({ path: currentURL.href }, '', currentURL.href);
+    }
 });
 
 let increaseOctaveButton = document.getElementById('increaseOctaveButton');
-increaseOctaveButton.addEventListener('click', function() {
+increaseOctaveButton.addEventListener('click', function () {
     var detune = activeSource.detune.value
-    if (detune <= 2400){
-     detune += 1200
-     activeSource.detune.value = detune
-     document.getElementById('octave-display').innerHTML = detune/1200
-     let currentURL = new URL(window.location.href);
+    if (detune <= 2400) {
+        detune += 1200
+        activeSource.detune.value = detune
+        document.getElementById('octave-display').innerHTML = detune / 1200
+        let currentURL = new URL(window.location.href);
 
-    // Set the nodeID parameter
-    currentURL.searchParams.set('octave', detune/1200);
+        // Set the nodeID parameter
+        currentURL.searchParams.set('octave', detune / 1200);
 
-    // Update the URL without reloading the page
-    window.history.pushState({ path: currentURL.href }, '', currentURL.href);
+        // Update the URL without reloading the page
+        window.history.pushState({ path: currentURL.href }, '', currentURL.href);
     }
 });
 
@@ -499,7 +499,7 @@ increaseOctaveButton.addEventListener('click', function() {
 var container = document.getElementById('container');
 
 // Add event listener to the container for mousedown event
-container.addEventListener('mousedown', function(event) {
+container.addEventListener('mousedown', function (event) {
     // Check if the event target has the class 'whitenote' or 'blacknote'
     if (event.target.classList.contains('whitenote') || event.target.classList.contains('blacknote')) {
         // Call the noteDown function passing the dataset.note value and whether it's a black note or not
@@ -508,10 +508,31 @@ container.addEventListener('mousedown', function(event) {
 });
 
 // Add event listener to the container for mouseup event
-container.addEventListener('mouseup', function(event) {
+container.addEventListener('mouseup', function (event) {
     // Check if the event target has the class 'whitenote' or 'blacknote'
     if (event.target.classList.contains('whitenote') || event.target.classList.contains('blacknote')) {
         // Call the noteUp function passing the dataset.note value and whether it's a black note or not
         noteUp(event.target.dataset.note, event.target.classList.contains('blacknote'));
     }
+});
+
+const inputSelect = document.getElementById('inputSource');
+inputSelect.addEventListener('change', function (event) {
+    const source = event.target.value;
+    if (source == "keys") {
+        activeSource = ctx.createOscillator()
+        
+    }
+    if (source == "mic") {
+        navigator.mediaDevices.getUserMedia({ audio: true })
+            .then(function (stream) {
+                // Create a MediaStreamAudioSourceNode
+                activeSource = ctx.createMediaStreamSource(stream);
+
+            })
+            .catch(function (err) {
+                console.error('Error accessing microphone:', err);
+            });
+    }
+    buildSignalChain()
 });
