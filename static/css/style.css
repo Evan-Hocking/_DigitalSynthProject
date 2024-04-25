@@ -41,6 +41,7 @@
     justify-content: space-between;
     /* Distribute buttons evenly */
     width: 100%;
+    margin:5px;
 }
 
 .rs-overlay.rs-transition.rs-bg-color {
@@ -199,7 +200,7 @@ html {
 
 button {
     background-color: #292929;
-    border-radius: 10px;
+    border-radius: 5px;
     color: #E3E3E3;
     border: none;
     transition: background-color 0.1s ease;
@@ -228,4 +229,14 @@ button:active {
 
 ::-webkit-scrollbar-thumb {
     border-radius: 5px; /* Round the corners */
+}
+
+#remove{
+    padding: 5px;
+    margin-top: 5px;
+}
+
+
+#sample-rate-container{
+    display: none;
 }

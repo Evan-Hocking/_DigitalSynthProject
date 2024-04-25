@@ -377,24 +377,29 @@ function playSound(frequency) {
 // #endregion
 
 function buildSignalChain() {
+    
     const filterKeys = Object.keys(activeFilters);
     activeSource.disconnect()
     for (let i = 0; i < filterKeys.length; i++) {
         activeFilters[filterKeys[i]].disconnect()
     }
     activeSource.connect(activeFilters[filterKeys[0]]);
+    
     for (let i = 0; i < filterKeys.length - 1; i++) {
         const currentNode = activeFilters[filterKeys[i]];
         const nextNode = activeFilters[filterKeys[i + 1]];
         currentNode.connect(nextNode);
+        
     }
 
 
     // Connect the last element in the chain to the destination
     const lastKey = filterKeys[filterKeys.length - 1];
     const lastNode = activeFilters[lastKey];
+
     lastNode.connect(analyser);
     analyser.connect(ctx.destination);
+
 }
 
 
@@ -518,21 +523,75 @@ container.addEventListener('mouseup', function (event) {
 
 const inputSelect = document.getElementById('inputSource');
 inputSelect.addEventListener('change', function (event) {
+    const waveformContainer = document.getElementById('waveform-container');
+    const sampleRateContainer = document.getElementById('sample-rate-container');
     const source = event.target.value;
     if (source == "keys") {
         activeSource = ctx.createOscillator()
-        
+        buildSignalChain()
+
     }
     if (source == "mic") {
-        navigator.mediaDevices.getUserMedia({ audio: true })
+        activeSource.disconnect()
+        const sampleRate = document.getElementById('sampleRate').value;
+        waveformContainer.style.display = 'none';
+        sampleRateContainer.style.display = 'list-item';
+        const constraints = {
+            audio: {
+                sampleRate: sampleRate, // Desired sample rate in Hz
+                // Other constraints if needed
+            }
+        };
+        navigator.mediaDevices.getUserMedia(constraints)
             .then(function (stream) {
                 // Create a MediaStreamAudioSourceNode
                 activeSource = ctx.createMediaStreamSource(stream);
+
+                buildSignalChain()
+
+                gainNode.gain.value = 1;
+
+                vis.draw(analyser, dataArray, c);
+                ctx.resume()
 
             })
             .catch(function (err) {
                 console.error('Error accessing microphone:', err);
             });
     }
-    buildSignalChain()
+
 });
+
+const sampleRateSelect = document.getElementById('sampleRate');
+sampleRateSelect.addEventListener('change', function (event) {
+    activeSource.disconnect(); // Disconnect the existing source node
+
+    // Create constraints with the new sample rate
+    const constraints = {
+        audio: {
+            sampleRate: sampleRateSelect.value, // Desired sample rate in Hz
+            // Other constraints if needed
+        }
+    };
+
+    // Get the media stream with the new sample rate
+    navigator.mediaDevices.getUserMedia(constraints)
+        .then(function (stream) {
+            // Create a new MediaStreamAudioSourceNode with the new stream
+            activeSource = ctx.createMediaStreamSource(stream);
+
+            // Rebuild the signal chain or any other necessary setup
+            buildSignalChain();
+
+            // Set up other nodes and resume audio context
+            gainNode.gain.value = 1;
+            vis.draw(analyser, dataArray, c);
+            ctx.resume();
+        })
+        .catch(function (err) {
+            console.error('Error accessing microphone:', err);
+        });
+
+});
+
+
