@@ -2,7 +2,7 @@ export function init() {
     const data = {
         name: "reverb",
         file: "reverb.mjs",
-        description: "template"
+        description: "Simulates the acoustic reflections of a space, adding depth and ambiance to the sound."
     }
     return data;
 }
@@ -19,7 +19,15 @@ export function buildui(filterID, sampleRate, removeParentDiv,updateFilterParams
 
         var desc = document.createElement("p")
         desc.textContent = 'Simulates acoustic reflections'
+        desc.className = 'filter-description'
         container.appendChild(desc)
+
+        var more = document.createElement("p")
+        more.textContent = "[desc]"
+        var description = init()["description"]
+        more.title = description
+        more.className = "hoverMore"
+        container.appendChild(more)
 
         var durcontainer = document.createElement("div")
         durcontainer.className = "slider-container"

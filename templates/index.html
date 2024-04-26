@@ -26,21 +26,23 @@
                     <label for="inputSource">Select Device: </label>
 
                     <select name="inputSource" id="inputSource">
-                        <option value="keys">Keyboard</option>
-                        <option value="mic">Microphone</option>
+                        <option title="Onscreen Keyboard"value="keys">Keyboard</option>
+                        <option title="Device Microphone Input"value="mic">Microphone</option>
                     </select>
                 </div>
-                <div class="slider-container"  id="waveform-container">
+                <div class="slider-container"  id="waveform-container"title="Select the oscillator waveform">
                     <label for="waveform">Waveform: </label>
+                    
 
                     <select name="waveform" id="waveform">
-                        <option value="sine">Sine</option>
-                        <option value="square">Square</option>
-                        <option value="sawtooth">Sawtooth</option>
-                        <option value="triangle">Triangle</option>
+                        <option title="Smooth and pure, resembling a fundamental tone" value="sine">Sine</option>
+                        <option title="Pronounced harmonics, generating a bright, buzzy tone." value="square">Square</option>
+                        <option title="Rich in harmonics, producing a bright and edgy sound." value="sawtooth">Sawtooth</option>
+                        <option title="Mildly harmonic, with a soft, mellow timbre." value="triangle">Triangle</option>
                     </select>
+                    
                 </div>
-                <div class="slider-container"  id="sample-rate-container">
+                <div class="slider-container"  id="sample-rate-container"title="Select your input Device Sample Rate">
                     <label for="sampleRate">Sample Rate: </label>
 
                     <select name="sampleRate" id="sampleRate">
@@ -67,22 +69,22 @@
             <div class="adsr-container">
                 <h3>ADSR Envelope</h3>
                 <p>Amplitude over time</p>
-                <div class="slider-container">
+                <div class="slider-container"title="Attack: Determines how quickly the sound reaches its peak volume.">
                     <label for="attack">A</label>
                     <input type="range" id="attack" min="1" max="100" value="20">
 
                 </div>
-                <div class="slider-container">
+                <div class="slider-container"title="Decay: Sets the time it takes for the sound to decrease from the peak to the sustain level.">
                     <label for="decay">D</label>
                     <input type="range" id="decay" min="1" max="100" value="20">
 
                 </div>
-                <div class="slider-container">
+                <div class="slider-container"title="Sustain: Defines the level at which the sound remains as long as the note is held.">
                     <label for="decay">S</label>
                     <input type="range" id="sustain" min="1" max="100" value="20">
 
                 </div>
-                <div class="slider-container">
+                <div class="slider-container"title="Release: Controls the time it takes for the sound to fade out after the note is released.">
                     <label for="release">R</label>
                     <input type="range" id="release" min="1" max="100" value="20">
 
@@ -93,13 +95,13 @@
             </div>
         </div>
         <div>
-            <button id="btn-save-config">Save Signal Chain</button>
+            <button id="btn-save-config" title="Copy to Clipboard">Save Signal Chain</button>
         </div>
         <div id="keys">
             <div id="controls">
-                <button id="decreaseOctaveButton">&lt;&lt; Octave &lt;&lt;</button>
-                <p id="octave-display">0</p>
-                <button id="increaseOctaveButton">&gt;&gt; Octave &gt;&gt;</button>
+                <button id="decreaseOctaveButton"title="Reduce Octave by 1">&lt;&lt; Octave &lt;&lt;</button>
+                <p id="octave-display"title="Current Octave above Middle C">0</p>
+                <button id="increaseOctaveButton"title="Increase Octave by 1">&gt;&gt; Octave &gt;&gt;</button>
             </div>
             <div id='container'>
             </div>

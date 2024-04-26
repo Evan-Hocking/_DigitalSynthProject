@@ -2,7 +2,7 @@ export function init() {
     const data = {
         name: "allpass",
         file: "allpass.mjs",
-        description: "lets all frequencies through but changes phase relationship"
+        description: "Alters the phase relationship between different frequencies without affecting their amplitude."
     }
     return data;
 }
@@ -20,7 +20,15 @@ export function buildui(filterID, sampleRate, removeParentDiv,updateFilterParams
 
         var desc = document.createElement("p")
         desc.textContent = 'Shifts phasing'
+        desc.className = 'filter-description'
         container.appendChild(desc)
+
+        var more = document.createElement("p")
+        more.textContent = "[desc]"
+        var description = init()["description"]
+        more.title = description
+        more.className = "hoverMore"
+        container.appendChild(more)
 
         // Create frequency slider
         var freqcontainer = document.createElement("div")

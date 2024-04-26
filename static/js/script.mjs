@@ -61,6 +61,9 @@ function createFilterList() {
     filterNames.forEach(filterName => {
         const listItem = document.createElement('li');
         listItem.textContent = util.capitalizeWords(filterName);
+        const filterInfo = availableFilters[filterName].init()
+        listItem.title = filterInfo["description"]
+
         listItem.addEventListener('click', () => {
             bldFilter(filterName);
             hideFilterList();
@@ -76,7 +79,24 @@ function createFilterList() {
 function showFilterList() {
     const filterList = createFilterList();
     const addFilter = document.getElementById('addFilter');
+
+    const addTitle = document.createElement('h3')
+    addTitle.textContent = "Filters"
+    addTitle.style = "padding:2px;margin:1px;"
+    addFilter.insertAdjacentElement('beforebegin', addTitle)
+
+    const addNote = document.createElement('p')
+    addNote.textContent = "Hover filter for more"
+    addNote.style = "font-size: 7pt; padding:1px; margin: 1px;"
+    addFilter.insertAdjacentElement('beforebegin', addNote)
+
     addFilter.insertAdjacentElement('beforebegin', filterList);
+
+    var remove = document.createElement("button")
+    remove.id = "remove"
+    remove.textContent = "Remove"
+    remove.addEventListener('click', removeParentDiv);
+    addFilter.insertAdjacentElement('beforebegin', remove);
     addFilter.remove()
     // Hide the filter list when clicking outside of it
     document.addEventListener('click', hideFilterListOnClickOutside);
@@ -100,11 +120,20 @@ function hideFilterListOnClickOutside(event) {
 }
 
 function getFilterNumber() {
-    const keys = Object.keys(activeFilters)
-    const lastKey = keys[keys.length - 1];
-    const filterNumber = parseInt(lastKey.match(/\d+$/)[0], 10) + 1
-    return filterNumber
+    let currentURL = new URL(window.location.href);
+    let params = new URLSearchParams(currentURL.search);
+    let paramValues = params.getAll('nodeID');
+
+    // If there are existing nodeID parameters in the URL, determine the filter number based on the highest number found
+    if (paramValues.length > 0) {
+        let maxFilterNumber = Math.max(...paramValues.map(value => parseInt(value.match(/\d+$/)[0], 10)));
+        return maxFilterNumber + 1;
+    } else {
+        // If there are no existing nodeID parameters, return 1
+        return 1;
+    }
 }
+
 
 function bldFilter(filterName) {
     const filterNumber = getFilterNumber()
@@ -161,17 +190,19 @@ function removeFromURL(nodeID) {
 
 function removeParentDiv(event) {
     const parentDiv = event.target.parentElement;
-    const FilterID = parentDiv.className.replace("-container", "");
-    removeFromURL(FilterID)
+    console.log(parentDiv)
+    if (parentDiv.className != "add-container") {
+        const FilterID = parentDiv.className.replace("-container", "");
+        removeFromURL(FilterID)
 
 
-    activeFilters[FilterID].disconnect
-    delete activeFilters[FilterID]
+        activeFilters[FilterID].disconnect
+        delete activeFilters[FilterID]
 
 
 
-    buildSignalChain()
-
+        buildSignalChain()
+    }else{buildAdd()}
     // Remove the parent div
     parentDiv.remove();
 }
@@ -313,29 +344,32 @@ function updateFilterParams() {
 
 // #region noteEvent
 function noteUp(note, isSharp) {
-    const elem = document.querySelector(`[data-note="${note}"]`);
-    elem.style.background = isSharp ? '#292929' : 'white';
-    const releaseTime = getRelease(); // in seconds
-    if (activeKeys[0]) {
-        noteDown(util.keyNoteMapping[activeKeys[activeKeys.length - 1]],)
-    } else {
-        releaseEnvelope(releaseTime)
-    }
+    if (inputSelect.value == "keys") {
+        const elem = document.querySelector(`[data-note="${note}"]`);
+        elem.style.background = isSharp ? '#292929' : 'white';
+        const releaseTime = getRelease(); // in seconds
+        if (activeKeys[0]) {
+            noteDown(util.keyNoteMapping[activeKeys[activeKeys.length - 1]],)
+        } else {
+            releaseEnvelope(releaseTime)
+        }
 
+    }
 }
 
 //controls behaviour for when a note is pressed
 function noteDown(note, isSharp) {
+    if (inputSelect.value == "keys") {
+        const elem = document.querySelector(`[data-note="${note}"]`);
+        if (elem) {
+            event.stopPropagation();
+            elem.style.background = isSharp ? 'black' : '#ccc';
+            var frequency = getFrequency(util.noteToMIDI(note))
 
-    const elem = document.querySelector(`[data-note="${note}"]`);
-    if (elem) {
-        event.stopPropagation();
-        elem.style.background = isSharp ? 'black' : '#ccc';
-        var frequency = getFrequency(util.noteToMIDI(note))
 
-
-        // Play the sound with the current gain
-        playSound(frequency);
+            // Play the sound with the current gain
+            playSound(frequency);
+        }
     }
 }
 
@@ -377,19 +411,19 @@ function playSound(frequency) {
 // #endregion
 
 function buildSignalChain() {
-    
+
     const filterKeys = Object.keys(activeFilters);
     activeSource.disconnect()
     for (let i = 0; i < filterKeys.length; i++) {
         activeFilters[filterKeys[i]].disconnect()
     }
     activeSource.connect(activeFilters[filterKeys[0]]);
-    
+
     for (let i = 0; i < filterKeys.length - 1; i++) {
         const currentNode = activeFilters[filterKeys[i]];
         const nextNode = activeFilters[filterKeys[i + 1]];
         currentNode.connect(nextNode);
-        
+
     }
 
 
@@ -439,17 +473,31 @@ document.addEventListener('DOMContentLoaded', function () {
         paramValues[index] = value.replace(/\d+$/, ''); // Replace trailing digits with empty string
         bldFilter(paramValues[index])
     });
-    var waveform = params.get('waveform');
-    if (waveform) {
-        activeSource.type = waveform
-        document.getElementById("waveform").value = waveform
+    var inputDevice = params.get('input')
+    if (inputDevice == 'mic') {
+        var sampleRate = params.get('sampleRate')
+        buildMicInput(sampleRate)
+        inputSelect.value = 'mic'
+        sampleRateSelect.value = sampleRate
+        const waveformContainer = document.getElementById('waveform-container');
+        const sampleRateContainer = document.getElementById('sample-rate-container');
+        const keyboardContainer = document.getElementById('keys');
+        waveformContainer.style.display = 'none';
+        sampleRateContainer.style.display = 'list-item';
+        keyboardContainer.style.display = 'none';
+        document.querySelector('.adsr-container').style.display = 'none';
+    } else {
+        var waveform = params.get('waveform');
+        if (waveform) {
+            activeSource.type = waveform
+            document.getElementById("waveform").value = waveform
+        }
+        var octave = params.get('octave')
+        if (octave) {
+            activeSource.detune.value = octave * 1200
+            document.getElementById('octave-display').innerHTML = octave
+        }
     }
-    var octave = params.get('octave')
-    if (octave) {
-        activeSource.detune.value = octave * 1200
-        document.getElementById('octave-display').innerHTML = octave
-    }
-
 });
 
 let btnSaveConfig = document.getElementById('btn-save-config');
@@ -525,51 +573,65 @@ const inputSelect = document.getElementById('inputSource');
 inputSelect.addEventListener('change', function (event) {
     const waveformContainer = document.getElementById('waveform-container');
     const sampleRateContainer = document.getElementById('sample-rate-container');
+    const keyboardContainer = document.getElementById('keys');
     const source = event.target.value;
+    const adsrContainer = document.querySelector('.adsr-container');
+    activeSource.disconnect()
+    let currentURL = new URL(window.location.href);
+    currentURL.searchParams.set('input', source)
     if (source == "keys") {
         activeSource = ctx.createOscillator()
         buildSignalChain()
+        waveformContainer.style.display = 'list-item';
+        sampleRateContainer.style.display = 'none';
+        keyboardContainer.style.display = 'block';
+        adsrContainer.style.display = 'block';
+
+        activeSource.type = waveformSelect.value
+
+
+        // Set the nodeID parameter
+        currentURL.searchParams.set('waveform', waveformSelect.value);
+        currentURL.searchParams.delete('sampleRate')
+
+
+        // Update the URL without reloading the page
 
     }
     if (source == "mic") {
-        activeSource.disconnect()
+        activeFrequency = null
         const sampleRate = document.getElementById('sampleRate').value;
         waveformContainer.style.display = 'none';
         sampleRateContainer.style.display = 'list-item';
-        const constraints = {
-            audio: {
-                sampleRate: sampleRate, // Desired sample rate in Hz
-                // Other constraints if needed
-            }
-        };
-        navigator.mediaDevices.getUserMedia(constraints)
-            .then(function (stream) {
-                // Create a MediaStreamAudioSourceNode
-                activeSource = ctx.createMediaStreamSource(stream);
-
-                buildSignalChain()
-
-                gainNode.gain.value = 1;
-
-                vis.draw(analyser, dataArray, c);
-                ctx.resume()
-
-            })
-            .catch(function (err) {
-                console.error('Error accessing microphone:', err);
-            });
+        keyboardContainer.style.display = 'none';
+        adsrContainer.style.display = 'none';
+        currentURL.searchParams.delete('waveform')
+        currentURL.searchParams.set('sampleRate', sampleRate)
+        currentURL.searchParams.delete('octave')
+        buildMicInput(sampleRate)
     }
+    window.history.pushState({ path: currentURL.href }, '', currentURL.href);
 
 });
 
 const sampleRateSelect = document.getElementById('sampleRate');
 sampleRateSelect.addEventListener('change', function (event) {
+    buildMicInput(sampleRateSelect.value)
+
+});
+
+
+function buildMicInput(sampleRate) {
     activeSource.disconnect(); // Disconnect the existing source node
+
+    let currentURL = new URL(window.location.href);
+    currentURL.searchParams.set('sampleRate', sampleRate)
+    window.history.pushState({ path: currentURL.href }, '', currentURL.href);
 
     // Create constraints with the new sample rate
     const constraints = {
         audio: {
-            sampleRate: sampleRateSelect.value, // Desired sample rate in Hz
+            sampleRate: sampleRate, // Desired sample rate in Hz
             // Other constraints if needed
         }
     };
@@ -585,13 +647,19 @@ sampleRateSelect.addEventListener('change', function (event) {
 
             // Set up other nodes and resume audio context
             gainNode.gain.value = 1;
+            gainSelect.value = 20
             vis.draw(analyser, dataArray, c);
             ctx.resume();
         })
         .catch(function (err) {
             console.error('Error accessing microphone:', err);
         });
+}
 
+
+const gainSelect = document.getElementById('volume-slider');
+gainSelect.addEventListener('change', function (event) {
+    if (inputSelect.value == "mic"){
+        gainNode.gain.value = gainSelect.value/20
+    }
 });
-
-

@@ -2,7 +2,7 @@ export function init() {
     const data = {
         name: "lowshelf",
         file: "lowshelf.mjs",
-        description: "frequencies below value get boost"
+        description: "Boosts or attenuates frequencies below a specified cutoff frequency."
     }
     return data;
 }
@@ -19,7 +19,15 @@ export function buildui(filterID, sampleRate, removeParentDiv,updateFilterParams
 
         var desc = document.createElement("p")
         desc.textContent = 'Boosts low frequencies'
+        desc.className = 'filter-description'
         container.appendChild(desc)
+
+        var more = document.createElement("p")
+        more.textContent = "[desc]"
+        var description = init()["description"]
+        more.title = description
+        more.className = "hoverMore"
+        container.appendChild(more)
 
         var freqcontainer = document.createElement("div")
         freqcontainer.className = "slider-container"

@@ -74,7 +74,7 @@
     white-space: nowrap;
     /* Prevent content from wrapping */
     min-height: 200px;
-    margin-bottom: 30px;
+    margin-bottom: 50px;
 }
 
 .adsr-container {
@@ -122,7 +122,7 @@
 }
 
 #filtersList {
-    max-height: 140px;
+    max-height: 130px;
     /* Adjust as needed */
     overflow-y: auto;
     overflow-x: hidden;
@@ -199,7 +199,7 @@ html {
 }
 
 button {
-    background-color: #292929;
+    background-color: #373737;
     border-radius: 5px;
     color: #E3E3E3;
     border: none;
@@ -207,11 +207,11 @@ button {
 }
 
 button:hover {
-    background-color: #373737;
+    background-color: #474747;
 }
 
 button:active {
-    background-color: #474747;
+    background-color: #575757;
 }
 
 #btn-save-config{
@@ -239,4 +239,36 @@ button:active {
 
 #sample-rate-container{
     display: none;
+}
+
+.hoverMore{
+    font-size: 7pt;
+    padding:5px;
+    margin: 0px;
+}
+
+select{
+    background-color: #373737;
+    border: none;
+    border-radius: 5px;
+    color: #e3e3e3;
+}
+
+select:hover{
+    background-color: #474747;
+}
+
+select:active{
+    background-color: #575757;
+}
+
+option{
+    color: #E3E3E3;
+    background-color: #373737;
+
+}
+
+.filter-description{
+    padding: 2px;
+    margin: 2px;
 }

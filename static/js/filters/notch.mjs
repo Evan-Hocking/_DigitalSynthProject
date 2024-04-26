@@ -2,7 +2,7 @@ export function init() {
     const data = {
         name: "notch",
         file: "notch.mjs",
-        description: "Filters out frequencies in range"
+        description: "Attenuates frequencies within a narrow band while allowing frequencies outside that band to pass through."
     }
     return data;
 }
@@ -20,7 +20,15 @@ export function buildui(filterID, sampleRate, removeParentDiv,updateFilterParams
 
         var desc = document.createElement("p")
         desc.textContent = 'Removes frequency band'
+        desc.className = 'filter-description'
         container.appendChild(desc)
+
+        var more = document.createElement("p")
+        more.textContent = "[desc]"
+        var description = init()["description"]
+        more.title = description
+        more.className = "hoverMore"
+        container.appendChild(more)
 
         // Create frequency slider
         var freqcontainer = document.createElement("div")

@@ -2,7 +2,7 @@ export function init() {
     const data = {
         name: "BandPass",
         file: "bandpass.mjs",
-        description: "Atenuates frequencies outside of band"
+        description: "Allows frequencies within a certain range to pass through while attenuating frequencies outside that range."
     }
     return data;
 }
@@ -20,7 +20,15 @@ export function buildui(filterID, sampleRate, removeParentDiv,updateFilterParams
 
         var desc = document.createElement("p")
         desc.textContent = 'Allows frequency range'
+        desc.className = 'filter-description'
         container.appendChild(desc)
+
+        var more = document.createElement("p")
+        more.textContent = "[desc]"
+        var description = init()["description"]
+        more.title = description
+        more.className = "hoverMore"
+        container.appendChild(more)
 
         // Create frequency slider
         var freqcontainer = document.createElement("div")

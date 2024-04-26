@@ -2,7 +2,7 @@ export function init() {
     const data = {
         name: "Lowpass",
         file: "lowpass.mjs",
-        description: "Filters out frequencies above specified value"
+        description: "Allows frequencies below a certain cutoff frequency to pass through while attenuating higher frequencies."
     }
     return data;
 }
@@ -20,7 +20,15 @@ export function buildui(filterID, sampleRate, removeParentDiv,updateFilterParams
 
         var desc = document.createElement("p")
         desc.textContent = 'Blocks high frequencies'
+        desc.className = 'filter-description'
         container.appendChild(desc)
+
+        var more = document.createElement("p")
+        more.textContent = "[desc]"
+        var description = init()["description"]
+        more.title = description
+        more.className = "hoverMore"
+        container.appendChild(more)
 
         // Create frequency slider
         var freqcontainer = document.createElement("div")

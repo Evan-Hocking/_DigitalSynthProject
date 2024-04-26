@@ -2,7 +2,7 @@ export function init() {
     const data = {
         name: "pan",
         file: "pan.mjs",
-        description: "pan"
+        description: "Adjusts the balance of a sound between the left and right stereo channels."
     }
     return data;
 }
@@ -19,7 +19,15 @@ export function buildui(filterID, sampleRate, removeParentDiv,updateFilterParams
 
         var desc = document.createElement("p")
         desc.textContent = 'Adjusts stereo field'
+        desc.className = 'filter-description'
         container.appendChild(desc)
+
+        var more = document.createElement("p")
+        more.textContent = "[desc]"
+        var description = init()["description"]
+        more.title = description
+        more.className = "hoverMore"
+        container.appendChild(more)
 
         var pancontainer = document.createElement("div")
         pancontainer.className = "slider-container"
