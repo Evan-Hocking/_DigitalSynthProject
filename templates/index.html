@@ -6,7 +6,7 @@
     <title>Open Synth</title>
     <link rel="icon" type="image/x-icon" href="static/image/icons/keybord_keys_piano_icon_123891.ico">
     <script src="static/js/init.mjs"></script>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://code.jquery.com/jquery-3.2.1.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/round-slider@1.6.1/dist/roundslider.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/round-slider@1.6.1/dist/roundslider.min.js"></script>
@@ -18,96 +18,160 @@
 <body>
     <h1>Open Synth</h1>
     <div class="wrapper">
-        <div class="effects-container">
-            <div class="inputDevice">
+        <div class="box">
+            <div class="effects-container">
+                <div class="inputDevice">
 
-                <h3>Input Device</h3>
-                <div class="slider-container">
-                    <label for="inputSource">Select Device: </label>
+                    <h3>Input Device</h3>
+                    <div class="slider-container">
+                        <label for="inputSource">Select Device: </label>
 
-                    <select name="inputSource" id="inputSource">
-                        <option title="Onscreen Keyboard"value="keys">Keyboard</option>
-                        <option title="Device Microphone Input"value="mic">Microphone</option>
-                    </select>
+                        <select name="inputSource" id="inputSource">
+                            <option title="Onscreen Keyboard" value="keys">Keyboard</option>
+                            <option title="Device Microphone Input" value="mic">Microphone</option>
+                        </select>
+                    </div>
+                    <div class="slider-container" id="waveform-container" title="Select the oscillator waveform">
+                        <label for="waveform">Waveform: </label>
+
+
+                        <select name="waveform" id="waveform">
+                            <option title="Smooth and pure, resembling a fundamental tone" value="sine">Sine</option>
+                            <option title="Pronounced harmonics, generating a bright, buzzy tone." value="square">Square
+                            </option>
+                            <option title="Rich in harmonics, producing a bright and edgy sound." value="sawtooth">
+                                Sawtooth
+                            </option>
+                            <option title="Mildly harmonic, with a soft, mellow timbre." value="triangle">Triangle
+                            </option>
+                        </select>
+
+                    </div>
+                    <div class="slider-container" id="sample-rate-container"
+                        title="Select your input Device Sample Rate">
+                        <label for="sampleRate">Sample Rate: </label>
+
+                        <select name="sampleRate" id="sampleRate">
+                            <option value=44100>44100</option>
+                            <option value=48000>48000</option>
+                            <option value=88200>88200</option>
+                            <option value=96000>96000</option>
+                            <option value=176400>176400</option>
+                            <option value=192000>192000</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="slider-container"  id="waveform-container"title="Select the oscillator waveform">
-                    <label for="waveform">Waveform: </label>
-                    
-
-                    <select name="waveform" id="waveform">
-                        <option title="Smooth and pure, resembling a fundamental tone" value="sine">Sine</option>
-                        <option title="Pronounced harmonics, generating a bright, buzzy tone." value="square">Square</option>
-                        <option title="Rich in harmonics, producing a bright and edgy sound." value="sawtooth">Sawtooth</option>
-                        <option title="Mildly harmonic, with a soft, mellow timbre." value="triangle">Triangle</option>
-                    </select>
-                    
-                </div>
-                <div class="slider-container"  id="sample-rate-container"title="Select your input Device Sample Rate">
-                    <label for="sampleRate">Sample Rate: </label>
-
-                    <select name="sampleRate" id="sampleRate">
-                        <option value=44100>44100</option>
-                        <option value=48000>48000</option>
-                        <option value=88200>88200</option>
-                        <option value=96000>96000</option>
-                        <option value=176400>176400</option>
-                        <option value=192000>192000</option>
-                    </select>
-                </div>
-            </div>
-            <div class="Volume">
-                <!-- <p class="vol-text">Gain:</p>
+                <div class="Volume">
+                    <!-- <p class="vol-text">Gain:</p>
             <div class="slider" id="volume-slider"></div> -->
-                <div class="slider-container" id="gain-slider">
-                    <!-- <label for="volume-slider">Gain</label> -->
-                    <h3>Gain</h3>
-                    <p>Set Oscillator Amplitude</p>
-                    <input type="range" id="volume-slider" min="1" max="100" value="50">
+                    <div class="slider-container" id="gain-slider">
+                        <!-- <label for="volume-slider">Gain</label> -->
+                        <h3>Gain</h3>
+                        <p>Set Oscillator Amplitude</p>
+                        <input type="range" id="volume-slider" min="1" max="100" value="50">
 
+                    </div>
+                </div>
+                <div class="adsr-container">
+                    <h3>ADSR Envelope</h3>
+                    <p>Amplitude over time</p>
+                    <div class="slider-container"
+                        title="Attack: Determines how quickly the sound reaches its peak volume.">
+                        <label for="attack">A</label>
+                        <input type="range" id="attack" min="1" max="100" value="20">
+
+                    </div>
+                    <div class="slider-container"
+                        title="Decay: Sets the time it takes for the sound to decrease from the peak to the sustain level.">
+                        <label for="decay">D</label>
+                        <input type="range" id="decay" min="1" max="100" value="20">
+
+                    </div>
+                    <div class="slider-container"
+                        title="Sustain: Defines the level at which the sound remains as long as the note is held.">
+                        <label for="decay">S</label>
+                        <input type="range" id="sustain" min="1" max="100" value="20">
+
+                    </div>
+                    <div class="slider-container"
+                        title="Release: Controls the time it takes for the sound to fade out after the note is released.">
+                        <label for="release">R</label>
+                        <input type="range" id="release" min="1" max="100" value="20">
+
+                    </div>
+                </div>
+                <div class="add-container">
+                    <button title="Add Filter Module" id="addFilter">+</button>
                 </div>
             </div>
-            <div class="adsr-container">
-                <h3>ADSR Envelope</h3>
-                <p>Amplitude over time</p>
-                <div class="slider-container"title="Attack: Determines how quickly the sound reaches its peak volume.">
-                    <label for="attack">A</label>
-                    <input type="range" id="attack" min="1" max="100" value="20">
-
-                </div>
-                <div class="slider-container"title="Decay: Sets the time it takes for the sound to decrease from the peak to the sustain level.">
-                    <label for="decay">D</label>
-                    <input type="range" id="decay" min="1" max="100" value="20">
-
-                </div>
-                <div class="slider-container"title="Sustain: Defines the level at which the sound remains as long as the note is held.">
-                    <label for="decay">S</label>
-                    <input type="range" id="sustain" min="1" max="100" value="20">
-
-                </div>
-                <div class="slider-container"title="Release: Controls the time it takes for the sound to fade out after the note is released.">
-                    <label for="release">R</label>
-                    <input type="range" id="release" min="1" max="100" value="20">
-
-                </div>
+            <div>
+                <button id="btn-save-config" title="Copy to Clipboard">Save Signal Chain</button>
             </div>
-            <div class="add-container">
-                <button title="Add Filter Module" id="addFilter">+</button>
+            <div id="keys">
+                <div id="controls">
+                    <button id="decreaseOctaveButton" title="Reduce Octave by 1">&lt;&lt; Octave &lt;&lt;</button>
+                    <p id="octave-display" title="Current Octave above Middle C">0</p>
+                    <button id="increaseOctaveButton" title="Increase Octave by 1">&gt;&gt; Octave &gt;&gt;</button>
+                </div>
+                <div id='container'>
+                </div>
+
             </div>
         </div>
-        <div>
-            <button id="btn-save-config" title="Copy to Clipboard">Save Signal Chain</button>
-        </div>
-        <div id="keys">
-            <div id="controls">
-                <button id="decreaseOctaveButton"title="Reduce Octave by 1">&lt;&lt; Octave &lt;&lt;</button>
-                <p id="octave-display"title="Current Octave above Middle C">0</p>
-                <button id="increaseOctaveButton"title="Increase Octave by 1">&gt;&gt; Octave &gt;&gt;</button>
+        <div class="tutorials">
+            <div class="tutorial-content">
+                <div>
+                    <h1>Tutorial</h1>
+                </div>
+                <div>
+                    <h3>Select Input Device</h3>
+                    <p>Select your sound source from:</p>
+                    <ul>
+                        <li>Keyboard - An oscillator controlled by a virtual keyboard interfaced with the mouse or
+                            computer keyboard</li>
+                        <li>Microphone - External audio stream from Microphone or other audio device</li>
+                    </ul>
+                    <p>Once chosen configure your input device by selecting the oscillator waveform or audio sample rate
+                    </p>
+                    <h4>Oscillator Waveform</h4>
+                    <p>Waveforms named after their shape are as follows:</p>
+                    <ul>
+                        <li>Sine - Smooth and pure, resembling a fundamental tone</li>
+                        <li>Square - Pronounced harmonics, generating a bright, buzzy tone.</li>
+                        <li>Sawtooth - Rich in harmonics, producing a bright and edgy sound.</li>
+                        <li>Triangle - Mildly harmonic, with a soft, mellow timbre.</li>
+                    </ul>
+                    <h4>Sample Rate</h4>
+                    <p>Select the sample rate used by your audio device.</p>
+                </div>
+                <div>
+                    <h3>Set Gain</h3>
+                    <p>The Gain sets the maximum volume reachable by the input device</p>
+                </div>
+                <div>
+                    <h3>ADSR Envelope</h3>
+                    <p>If using the oscillator the adsr controls how the volume changes overtime with each note press.
+                    </p>
+                    <ul>
+                        <li>Attack: Determines how quickly the sound reaches its peak volume.</li>
+                        <li>Decay: Sets the time it takes for the sound to decrease from the peak to the sustain level.
+                        </li>
+                        <li>Sustain: Defines the level at which the sound remains as long as the note is held.</li>
+                        <li>Release: Controls the time it takes for the sound to fade out after the note is released.
+                        </li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Filters</h3>
+                    <p>Add Filters to modify the sound. Each filter has its own parameters to set which change how the
+                        filter functions</p>
+                </div>
             </div>
-            <div id='container'>
-            </div>
-
+            <button id="hide-tutorials">Hide Tutorials</button>
+            
         </div>
     </div>
+
     <canvas id="canvas"></canvas>
 
     <script>

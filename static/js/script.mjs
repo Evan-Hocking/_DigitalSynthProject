@@ -3,7 +3,7 @@ const ctx = new (window.AudioContext || window.webkitAudioContext)();
 const sampleRate = ctx.sampleRate;
 let gainNode = ctx.createGain(); // Variable to store the gain node
 let activeSource = ctx.createOscillator(); // Variable to store the currently active source
-
+let activeKey = null;
 let activeFrequency = null;
 let activeFilters = { "gainNode0": gainNode }
 const activeKeys = []
@@ -202,7 +202,7 @@ function removeParentDiv(event) {
 
 
         buildSignalChain()
-    }else{buildAdd()}
+    } else { buildAdd() }
     // Remove the parent div
     parentDiv.remove();
 }
@@ -556,6 +556,8 @@ container.addEventListener('mousedown', function (event) {
     // Check if the event target has the class 'whitenote' or 'blacknote'
     if (event.target.classList.contains('whitenote') || event.target.classList.contains('blacknote')) {
         // Call the noteDown function passing the dataset.note value and whether it's a black note or not
+        activeKey = event.target.dataset.note
+
         noteDown(event.target.dataset.note, event.target.classList.contains('blacknote'));
     }
 });
@@ -563,11 +565,19 @@ container.addEventListener('mousedown', function (event) {
 // Add event listener to the container for mouseup event
 container.addEventListener('mouseup', function (event) {
     // Check if the event target has the class 'whitenote' or 'blacknote'
-    if (event.target.classList.contains('whitenote') || event.target.classList.contains('blacknote')) {
-        // Call the noteUp function passing the dataset.note value and whether it's a black note or not
-        noteUp(event.target.dataset.note, event.target.classList.contains('blacknote'));
-    }
+
+    // Call the noteUp function passing the dataset.note value and whether it's a black note or not
+    console.log(activeKey)
+    noteUp(activeKey, activeKey.includes('#'));
+    activeKey = null;
+
 });
+container.addEventListener('contextmenu', function (event) {
+    event.preventDefault();
+});
+
+
+
 
 const inputSelect = document.getElementById('inputSource');
 inputSelect.addEventListener('change', function (event) {
@@ -659,7 +669,19 @@ function buildMicInput(sampleRate) {
 
 const gainSelect = document.getElementById('volume-slider');
 gainSelect.addEventListener('change', function (event) {
-    if (inputSelect.value == "mic"){
-        gainNode.gain.value = gainSelect.value/20
+    if (inputSelect.value == "mic") {
+        gainNode.gain.value = gainSelect.value / 20
+    }
+});
+
+let hideButton = document.getElementById('hide-tutorials');
+hideButton.addEventListener('click', function () {
+    let tutBox = document.querySelector(".tutorial-content")
+    if (hideButton.textContent == "Hide Tutorials") {
+        hideButton.textContent = "Show Tutorials";
+        tutBox.style.display = "none"
+    } else {
+        hideButton.textContent = "Hide Tutorials";
+        tutBox.style.display = "block"
     }
 });

@@ -75,6 +75,8 @@
     /* Prevent content from wrapping */
     min-height: 200px;
     margin-bottom: 50px;
+    border-radius: 10px;
+    background-color: #171717;
 }
 
 .adsr-container {
@@ -92,7 +94,7 @@
 } */
 
 #canvas {
-    position: absolute;
+    position: fixed;
     bottom: 0;
     background-color: #262626;
 
@@ -137,8 +139,11 @@
 
 .wrapper {
     display: flex;
-    flex-direction: column;
+    /* flex-direction: column; */
+    padding-bottom: 200px;
+    flex-wrap: nowrap;
 }
+
 
 #keys {
     margin-top: 20px;
@@ -271,4 +276,49 @@ option{
 .filter-description{
     padding: 2px;
     margin: 2px;
+}
+
+.tutorials{
+    width: 25%;
+    box-sizing: border-box;
+    margin:none;
+    padding: 10px;
+   
+    min-width: 250px;
+    overflow: hidden;
+}
+.tutorial-content{
+    overflow-y: scroll;
+    max-height: 60vh;
+}
+.tutorial-content div{
+    background-color: #262626;
+    border-radius: 10px;
+    padding:10px;
+    margin: 20px;
+    
+}
+#hide-tutorials{
+    background-color: #373737;
+    border-radius: 10px;
+    margin: 16px;
+    font-size: 16pt;
+    font-weight: 600;
+    width: 80%;
+    align-self: center;
+    padding:10px;
+}
+#hide-tutorials:hover{
+    background-color: #474747;
+}
+#hide-tutorials:active{
+    background-color: #575757;
+}
+.box{
+    width: 75%;
+    box-sizing: border-box;
+    padding: 10px;
+}
+html{
+    overflow: hidden;
 }
