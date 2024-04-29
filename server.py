@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, send_from_directory, render_template, make_response
+from flask import Flask, jsonify, send_from_directory, render_template, make_response, request
 import os
 import json
 import webbrowser
@@ -34,7 +34,19 @@ def get_config():
         data = json.load(file)
         return data
 
+
+    
+
+
+@app.route('/write_csv', methods=['POST'])
+def write_csv():
+    data = request.get_json()  # Assuming data is sent as JSON from JavaScript
+    # Append data to CSV file
+    with open('data.csv', 'a') as f:
+        row = [str(item) for item in data]  # Convert integers to strings
+        f.write(','.join(row) + '\n')
+    return 'Data successfully appended to CSV file'
+
 if __name__ == '__main__':
     webbrowser.open("http://127.0.0.1:5000/")
     app.run(port=5000)
-    

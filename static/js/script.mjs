@@ -242,6 +242,7 @@ window.addEventListener('resize', () => c = vis.buildCanvas());
 // #region keyEventListeners
 //Event listener for the keydown event
 document.addEventListener('keydown', function (event) {
+    first_time = getCurrentTime() 
     //prevents default tab behaviour since it is used for keyboard input
     if (event.key === 'Tab') {
         event.preventDefault();
@@ -255,6 +256,7 @@ document.addEventListener('keydown', function (event) {
     // Check if the pressed key is in the mapping
     if (util.keyNoteMapping.hasOwnProperty(keyPressed)) {
         if (!activeKeys.includes(keyPressed)) {
+            
             activeKeys.push(keyPressed);
             const note = util.keyNoteMapping[keyPressed];
 
@@ -317,7 +319,7 @@ function updateADS() {
 
     // Decay
     gainNode.gain.linearRampToValueAtTime(sustain * amplitude, currentTime + attack + decay);
-
+    saveTimes()
     // Sustain (no change)
 
 
@@ -405,7 +407,7 @@ function playSound(frequency) {
         // activeSource = osc;
     }
     activeFrequency = frequency;
-
+    
 }
 
 // #endregion
@@ -685,3 +687,20 @@ hideButton.addEventListener('click', function () {
         tutBox.style.display = "block"
     }
 });
+let first_time = null
+function getCurrentTime(){
+    return performance.now();
+}
+function saveTimes(){
+    const data = [first_time,getCurrentTime()]
+    fetch('/write_csv', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      })
+      .then(response => response.text())
+      .then(result => console.log(result))
+      .catch(error => console.error('Error:', error));
+}
