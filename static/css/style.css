@@ -209,6 +209,7 @@ button {
     color: #E3E3E3;
     border: none;
     transition: background-color 0.1s ease;
+    font-weight: 700;
 }
 
 button:hover {
@@ -286,10 +287,11 @@ option{
    
     min-width: 250px;
     overflow: hidden;
+    
 }
 .tutorial-content{
     overflow-y: scroll;
-    max-height: 60vh;
+    max-height: 50vh;
 }
 .tutorial-content div{
     background-color: #262626;
@@ -307,6 +309,7 @@ option{
     width: 80%;
     align-self: center;
     padding:10px;
+    margin-bottom: 200px;
 }
 #hide-tutorials:hover{
     background-color: #474747;
@@ -320,5 +323,5 @@ option{
     padding: 10px;
 }
 html{
-    overflow: hidden;
+    overflow:hidden;
 }
