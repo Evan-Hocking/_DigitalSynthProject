@@ -410,6 +410,43 @@ function playSound(frequency) {
 
 // #endregion
 
+function buildMicInput(sampleRate) {
+    activeSource.disconnect(); // Disconnect the existing source node
+
+    let currentURL = new URL(window.location.href);
+    currentURL.searchParams.set('sampleRate', sampleRate)
+    window.history.pushState({ path: currentURL.href }, '', currentURL.href);
+
+    // Create constraints with the new sample rate
+    const constraints = {
+        audio: {
+            sampleRate: sampleRate, // Desired sample rate in Hz
+            // Other constraints if needed
+        }
+    };
+
+    // Get the media stream with the new sample rate
+    navigator.mediaDevices.getUserMedia(constraints)
+        .then(function (stream) {
+            // Create a new MediaStreamAudioSourceNode with the new stream
+            activeSource = ctx.createMediaStreamSource(stream);
+
+            // Rebuild the signal chain or any other necessary setup
+            buildSignalChain();
+
+            // Set up other nodes and resume audio context
+            gainNode.gain.value = 1;
+            gainSelect.value = 20
+            vis.draw(analyser, dataArray, c);
+            ctx.resume();
+        })
+        .catch(function (err) {
+            console.error('Error accessing microphone:', err);
+        });
+}
+
+
+//#region Event Listeners
 function buildSignalChain() {
 
     const filterKeys = Object.keys(activeFilters);
@@ -437,17 +474,6 @@ function buildSignalChain() {
 }
 
 
-// function getModules() {
-
-//     fetch(`${serverUrl}/get_files`)
-//         .then(response => response.json())
-//         .then(files => {
-//             console.log(files);
-
-//         })
-//         .catch(error => console.error('Error fetching files:', error));
-// }
-// getModules()
 
 const waveformSelect = document.getElementById('waveform');
 waveformSelect.addEventListener('change', function (event) {
@@ -631,40 +657,6 @@ sampleRateSelect.addEventListener('change', function (event) {
 });
 
 
-function buildMicInput(sampleRate) {
-    activeSource.disconnect(); // Disconnect the existing source node
-
-    let currentURL = new URL(window.location.href);
-    currentURL.searchParams.set('sampleRate', sampleRate)
-    window.history.pushState({ path: currentURL.href }, '', currentURL.href);
-
-    // Create constraints with the new sample rate
-    const constraints = {
-        audio: {
-            sampleRate: sampleRate, // Desired sample rate in Hz
-            // Other constraints if needed
-        }
-    };
-
-    // Get the media stream with the new sample rate
-    navigator.mediaDevices.getUserMedia(constraints)
-        .then(function (stream) {
-            // Create a new MediaStreamAudioSourceNode with the new stream
-            activeSource = ctx.createMediaStreamSource(stream);
-
-            // Rebuild the signal chain or any other necessary setup
-            buildSignalChain();
-
-            // Set up other nodes and resume audio context
-            gainNode.gain.value = 1;
-            gainSelect.value = 20
-            vis.draw(analyser, dataArray, c);
-            ctx.resume();
-        })
-        .catch(function (err) {
-            console.error('Error accessing microphone:', err);
-        });
-}
 
 
 const gainSelect = document.getElementById('volume-slider');
@@ -685,3 +677,4 @@ hideButton.addEventListener('click', function () {
         tutBox.style.display = "block"
     }
 });
+//#endregion Event Listeners

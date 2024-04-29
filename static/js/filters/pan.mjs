@@ -31,6 +31,7 @@ export function buildui(filterID, sampleRate, removeParentDiv,updateFilterParams
 
         var pancontainer = document.createElement("div")
         pancontainer.className = "slider-container"
+        pancontainer.title = "Controls the stereo balance by adjusting the signal's distribution between the left and right channels. Ranges from -1 (full left) to 1 (full right)."
 
         const panlabel = document.createElement('label');
         panlabel.setAttribute('for', filterID+'pan');  
@@ -45,7 +46,7 @@ export function buildui(filterID, sampleRate, removeParentDiv,updateFilterParams
         panSlider.value = 0;
         panSlider.addEventListener('change', updateFilterParams);
         
-        console.log(1)
+
         pancontainer.appendChild(panSlider);
 
         var remove = document.createElement("button")

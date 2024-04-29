@@ -33,6 +33,7 @@ export function buildui(filterID, sampleRate, removeParentDiv,updateFilterParams
         // Create frequency slider
         var freqcontainer = document.createElement("div")
         freqcontainer.className = "slider-container"
+        freqcontainer.title ="Controls the center frequency of the allpass filter."
 
         const frlabel = document.createElement('label');
         frlabel.setAttribute('for', filterID+'freq');  
@@ -52,6 +53,7 @@ export function buildui(filterID, sampleRate, removeParentDiv,updateFilterParams
         // Create Q slider
         var qcontainer = document.createElement("div")
         qcontainer.className = "slider-container"
+        qcontainer.title="Determines the width of the frequency band affected by the filter. Higher Q values result in narrower bands."
 
         const qlabel = document.createElement('label');
         qlabel.setAttribute('for', filterID+'Q');  

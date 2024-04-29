@@ -31,6 +31,7 @@ export function buildui(filterID, sampleRate, removeParentDiv,updateFilterParams
 
         var freqcontainer = document.createElement("div")
         freqcontainer.className = "slider-container"
+        freqcontainer.title = "Defines the frequency at which the highshelf filter starts to affect the signal."
 
         const frlabel = document.createElement('label');
         frlabel.setAttribute('for', filterID+'freq');  
@@ -48,6 +49,7 @@ export function buildui(filterID, sampleRate, removeParentDiv,updateFilterParams
 
         var dbcontainer = document.createElement("div")
         dbcontainer.className = "slider-container"
+        dbcontainer.title = "Sets the gain applied to frequencies above the cutoff frequency."
 
         const dblabel = document.createElement('label');
         dblabel.setAttribute('for', filterID+'db');  
