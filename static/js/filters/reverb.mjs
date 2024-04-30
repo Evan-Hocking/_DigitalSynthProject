@@ -94,7 +94,7 @@ export function buildFilter(ctx,filterID) {
 }
 
 export function updateParam(filter, filterID,ctx){
-    console.log(2)
+
     var [duration, decay] = getParam(filterID)
     var impulse = impulseResponse(duration,decay,ctx)
     filter.buffer = impulse;
@@ -104,7 +104,6 @@ export function updateParam(filter, filterID,ctx){
 function impulseResponse(duration,decay,ctx){
     
     var length = ctx.sampleRate * duration;
-    console.log(length)
     var impulse = ctx.createBuffer(1,length, ctx.sampleRate);
     var IR = impulse.getChannelData(0);
     for (var i=0;i<length;i++)IR[i] = (2*Math.random()-1)*Math.pow(1-i/length,decay);
