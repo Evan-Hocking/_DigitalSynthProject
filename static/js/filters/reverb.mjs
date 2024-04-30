@@ -31,7 +31,7 @@ export function buildui(filterID, sampleRate, removeParentDiv,updateFilterParams
 
         var durcontainer = document.createElement("div")
         durcontainer.className = "slider-container"
-        durcontainer.title = "Sets duration of reverberations, lower is shorted"
+        durcontainer.title = "Sets duration of reverberations, lower is shorter"
 
         const durlabel = document.createElement('label');
         durlabel.setAttribute('for', filterID+'dur');  

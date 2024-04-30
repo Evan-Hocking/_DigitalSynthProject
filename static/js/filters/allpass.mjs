@@ -33,7 +33,7 @@ export function buildui(filterID, sampleRate, removeParentDiv,updateFilterParams
         // Create frequency slider
         var freqcontainer = document.createElement("div")
         freqcontainer.className = "slider-container"
-        freqcontainer.title ="Controls the center frequency of the allpass filter."
+        freqcontainer.title ="Controls the centre frequency of the allpass filter."
 
         const frlabel = document.createElement('label');
         frlabel.setAttribute('for', filterID+'freq');  

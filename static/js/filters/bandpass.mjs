@@ -33,7 +33,7 @@ export function buildui(filterID, sampleRate, removeParentDiv,updateFilterParams
         // Create frequency slider
         var freqcontainer = document.createElement("div")
         freqcontainer.className = "slider-container"
-        freqcontainer.title = "Sets the center frequency of the bandpass filter."
+        freqcontainer.title = "Sets the centre frequency of the bandpass filter."
 
         const frlabel = document.createElement('label');
         frlabel.setAttribute('for', filterID+'freq');  

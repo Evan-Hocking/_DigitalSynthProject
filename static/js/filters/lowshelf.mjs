@@ -49,7 +49,7 @@ export function buildui(filterID, sampleRate, removeParentDiv,updateFilterParams
 
         var dbcontainer = document.createElement("div")
         dbcontainer.className = "slider-container"
-        dbcontainer.title = "ets the gain applied to frequencies below the cutoff frequency."
+        dbcontainer.title = "Sets the gain applied to frequencies below the cutoff frequency."
 
         const dblabel = document.createElement('label');
         dblabel.setAttribute('for', filterID+'db');  

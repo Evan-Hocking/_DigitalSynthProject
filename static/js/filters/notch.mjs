@@ -33,7 +33,7 @@ export function buildui(filterID, sampleRate, removeParentDiv,updateFilterParams
         // Create frequency slider
         var freqcontainer = document.createElement("div")
         freqcontainer.className = "slider-container"
-        freqcontainer.title = "Sets the center frequency of the notch filter, indicating the frequency around which attenuation occurs."
+        freqcontainer.title = "Sets the entre frequency of the notch filter, indicating the frequency around which attenuation occurs."
 
         const frlabel = document.createElement('label');
         frlabel.setAttribute('for', filterID+'freq');  
