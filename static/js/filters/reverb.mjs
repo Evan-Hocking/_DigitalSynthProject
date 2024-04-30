@@ -31,6 +31,7 @@ export function buildui(filterID, sampleRate, removeParentDiv,updateFilterParams
 
         var durcontainer = document.createElement("div")
         durcontainer.className = "slider-container"
+        durcontainer.title = "Sets duration of reverberations, lower is shorter"
 
         const durlabel = document.createElement('label');
         durlabel.setAttribute('for', filterID+'dur');  
@@ -45,11 +46,11 @@ export function buildui(filterID, sampleRate, removeParentDiv,updateFilterParams
         durSlider.value = 5;
         durSlider.addEventListener('change', updateFilterParams);
         
-        console.log(1)
         durcontainer.appendChild(durSlider);
 
         var decaycontainer = document.createElement("div")
         decaycontainer.className = "slider-container"
+        decaycontainer.title = "Adjust rate at which each reverberations fades, lower is shorter."
 
         const decaylabel = document.createElement('label');
         decaylabel.setAttribute('for', filterID+'decay');  

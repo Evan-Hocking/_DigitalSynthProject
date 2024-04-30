@@ -33,6 +33,7 @@ export function buildui(filterID, sampleRate, removeParentDiv,updateFilterParams
         // Create frequency slider
         var freqcontainer = document.createElement("div")
         freqcontainer.className = "slider-container"
+        freqcontainer.title = "Specifies the centre frequency of the peaking filter, indicating the frequency to be boosted or attenuated."
 
         const frlabel = document.createElement('label');
         frlabel.setAttribute('for', filterID+'freq');  
@@ -52,6 +53,7 @@ export function buildui(filterID, sampleRate, removeParentDiv,updateFilterParams
         // Create Q slider
         var qcontainer = document.createElement("div")
         qcontainer.className = "slider-container"
+        qcontainer.title = "Controls the width of the frequency band affected by the filter. Higher Q values result in narrower bands."
 
         const qlabel = document.createElement('label');
         qlabel.setAttribute('for', filterID+'Q');  
@@ -69,6 +71,7 @@ export function buildui(filterID, sampleRate, removeParentDiv,updateFilterParams
 
         var dbcontainer = document.createElement("div")
         dbcontainer.className = "slider-container"
+        dbcontainer.title = "Sets the amount of boost or attenuation applied to the selected frequency."
 
         const dblabel = document.createElement('label');
         dblabel.setAttribute('for', filterID+'db');  

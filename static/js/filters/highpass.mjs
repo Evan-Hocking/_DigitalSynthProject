@@ -33,6 +33,7 @@ export function buildui(filterID, sampleRate, removeParentDiv,updateFilterParams
         // Create frequency slider
         var freqcontainer = document.createElement("div")
         freqcontainer.className = "slider-container"
+        freqcontainer.title = "Specifies the cutoff frequency of the highpass filter. Frequencies above this value are passed, while those below are attenuated."
 
         const frlabel = document.createElement('label');
         frlabel.setAttribute('for', filterID+'freq');  
@@ -52,6 +53,7 @@ export function buildui(filterID, sampleRate, removeParentDiv,updateFilterParams
         // Create Q slider
         var qcontainer = document.createElement("div")
         qcontainer.className = "slider-container"
+        qcontainer.title = "Determines the sharpness of the filter's transition between passed and attenuated frequencies."
 
         const qlabel = document.createElement('label');
         qlabel.setAttribute('for', filterID+'Q');  
