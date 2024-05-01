@@ -1,9 +1,14 @@
-# Modular Synthesizer Interface
+# Name:
+Open Synth
 
-## Introduction
+# Introduction
 This project aims to develop an accessible interface for an open-source modular synthesizer, designed to allow novice users to produce a wide range of sounds. The interface leverages web and audio technologies to provide a user-friendly platform for sonic exploration and performance.
 
-## Installation
+# Prerequisites:
+ - Requires Python 3.9
+ - Requires Webbrowser
+ 
+# Installation
 To run the synthesizer interface, follow these steps:
 
 1. **Install Flask for Python:**
@@ -11,7 +16,7 @@ To run the synthesizer interface, follow these steps:
     pip install Flask
     ```
 
-## Usage
+# Usage
 After installing Flask, you can run the server by executing the following command:
 
 ```bash
