@@ -21,7 +21,7 @@ After installing Flask, you can run the server by executing the following comman
 
 ```bash
 python server.py
-
+```
 
 The System will then be opened in a browser but if renavigation is required head to:
 
